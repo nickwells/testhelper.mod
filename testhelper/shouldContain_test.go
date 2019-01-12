@@ -30,7 +30,7 @@ func TestMissingParts(t *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		tcID := fmt.Sprintf("test %d: %s :\n", i, tc.name)
+		tcID := fmt.Sprintf("test %d: %s", i, tc.name)
 		missing := missingParts(tc.s, tc.expect)
 		if StringSliceDiff(missing, tc.missing) {
 			t.Log(tcID)
