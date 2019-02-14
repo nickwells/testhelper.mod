@@ -16,10 +16,12 @@ func CheckError(t *testing.T, testID string, err error, expected bool, shouldCon
 			t.Log(testID)
 			t.Errorf("\t: there was an unexpected err: %s\n", err)
 			return false
-		} else {
-			return !ShouldContain(t, testID, "error", err.Error(), shouldContain)
 		}
-	} else if err == nil && expected {
+
+		return !ShouldContain(t, testID, "error", err.Error(), shouldContain)
+	}
+
+	if expected {
 		t.Log(testID)
 		t.Errorf("\t: an error was expected but none was returned\n")
 		return false
