@@ -15,23 +15,41 @@ import (
 // A golden file is a file that holds expected output (typically lengthy)
 // that can be compared as part of a test. It avoids the need to have a long
 // string in the body of a test.
+//
+//    DirNames is a slice of strings holding the parts of the directory path
+//    to the file
+//    Pfx is an optional prefix - leave it as an empty string to exclude it
+//    Sfx is an optional suffix - as for the prefix
 type GoldenFileCfg struct {
-	DirName string
-	Pfx     string
-	Sfx     string
+	DirNames []string
+	Pfx      string
+	Sfx      string
 }
 
-// FileName will return the name of a golden file. It applies the directory
-// name and any prefix or suffix to the supplied string to give a well-formed
-// name using the appropriate filepath parts for the operating system. A
+// PathName will return the name of a golden file. It applies the directory
+// names and any prefix or suffix to the supplied string to give a well-formed
+// name using the appropriate filepath separators for the operating system. A
 // suggested name to pass to this method might be the name of the current
 // test as given by the Name() method on testing.T.
 //
 // Note that any supplied name is "cleaned" by removing any part prior to an
 // embedded filepath.Separator.
-func (gfc GoldenFileCfg) FileName(name string) string {
-	return filepath.Join(gfc.DirName,
-		strings.Join([]string{gfc.Pfx, filepath.Base(name), gfc.Sfx}, "."))
+func (gfc GoldenFileCfg) PathName(name string) string {
+	fNameParts := make([]string, 0, 3)
+	if gfc.Pfx != "" {
+		fNameParts = append(fNameParts, gfc.Pfx)
+	}
+	fNameParts = append(fNameParts, filepath.Base(name))
+	if gfc.Sfx != "" {
+		fNameParts = append(fNameParts, gfc.Sfx)
+	}
+	fName := strings.Join(fNameParts, ".")
+
+	pathParts := make([]string, 0, len(gfc.DirNames)+1)
+	pathParts = append(pathParts, gfc.DirNames...)
+	pathParts = append(pathParts, fName)
+
+	return filepath.Join(pathParts...)
 }
 
 // CheckAgainstGoldenFile checks that the value given matches the contents of
@@ -44,12 +62,12 @@ func (gfc GoldenFileCfg) FileName(name string) string {
 //
 //    var upd = flag.Bool("upd", false, "update the golden files")
 //    gfc := testhelper.GoldenFileCfg{
-//        DirName: "testdata",
-//        Pfx:     "values",
-//        Sfx:     "txt",
+//        DirNames: []string{"testdata"},
+//        Pfx:      "values",
+//        Sfx:      "txt",
 //    }
 //    ...
-//    testhelper.CheckAgainstGoldenFile(t, ID, val, gfc.FileName(t.Name()), *upd)
+//    testhelper.CheckAgainstGoldenFile(t, ID, val, gfc.PathName(t.Name()), *upd)
 func CheckAgainstGoldenFile(t *testing.T, testID string, val []byte, gfName string, updGF bool) bool {
 	t.Helper()
 
