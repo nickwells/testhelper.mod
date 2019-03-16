@@ -4,34 +4,34 @@ import (
 	"testing"
 )
 
-// ErrExp records common details about error expectations for a test case. It
+// ExpErr records common details about error expectations for a test case. It
 // is intended that this should be embedded in a test case structure, which
 // will also have an ID structure embedded. The resulting test case can then
-// be passed to the CheckExpErr func. It is similar to the PanicExp structure
+// be passed to the CheckExpErr func. It is similar to the ExpPanic structure
 // in form and intended use.
-type ErrExp struct {
+type ExpErr struct {
 	ErrExpected      bool
 	ErrShouldContain []string
 }
 
-// MkErrExp is a constructor for the ErrExp struct. The ErrExpected flag is
+// MkExpErr is a constructor for the ExpErr struct. The ErrExpected flag is
 // always set to true and the slice of strings that the error should contain
-// is set to the slice of strings passed. For an ErrExp where the error is
+// is set to the slice of strings passed. For an ExpErr where the error is
 // not expected just leave it in its default state.
-func MkErrExp(s ...string) ErrExp {
-	return ErrExp{
+func MkExpErr(s ...string) ExpErr {
+	return ExpErr{
 		ErrExpected:      true,
 		ErrShouldContain: s,
 	}
 }
 
 // Exp returns true or false according to the value of the Expected field
-func (e ErrExp) Exp() bool {
+func (e ExpErr) Exp() bool {
 	return e.ErrExpected
 }
 
 // ShldCont returns the value of the ShouldContain field
-func (e ErrExp) ShldCont() []string {
+func (e ExpErr) ShldCont() []string {
 	return e.ErrShouldContain
 }
 

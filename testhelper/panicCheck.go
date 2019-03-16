@@ -5,22 +5,22 @@ import (
 	"testing"
 )
 
-// PanicExp records common details about panic expectations for a test
+// ExpPanic records common details about panic expectations for a test
 // case. It is intended that this should be embedded in a test case
 // structure, which will also have an ID structure embedded. The resulting
 // test case can then be passed to the CheckExpPanic func. It is similar to the
-// ErrExp structure in form and intended use.
-type PanicExp struct {
+// ExpErr structure in form and intended use.
+type ExpPanic struct {
 	PanicExpected      bool
 	PanicShouldContain []string
 }
 
-// MkPanicExp is a constructor for the PanicExp struct. The PanicExpected
+// MkExpPanic is a constructor for the ExpPanic struct. The PanicExpected
 // flag is always set to true and the slice of strings that the panic should
-// contain is set to the slice of strings passed. For a PanicExp where a
+// contain is set to the slice of strings passed. For a ExpPanic where a
 // panic is not expected just leave it in its default state.
-func MkPanicExp(s ...string) PanicExp {
-	return PanicExp{
+func MkExpPanic(s ...string) ExpPanic {
+	return ExpPanic{
 		PanicExpected:      true,
 		PanicShouldContain: s,
 	}
@@ -28,12 +28,12 @@ func MkPanicExp(s ...string) PanicExp {
 
 // Exp returns true or false according to the value of the PanicExpected
 // field
-func (p PanicExp) Exp() bool {
+func (p ExpPanic) Exp() bool {
 	return p.PanicExpected
 }
 
 // ShldCont returns the value of the ShouldContain field
-func (p PanicExp) ShldCont() []string {
+func (p ExpPanic) ShldCont() []string {
 	return p.PanicShouldContain
 }
 

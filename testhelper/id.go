@@ -13,7 +13,10 @@ type ID struct {
 	AtFullName string
 }
 
-// MkID is a constructor for the ID type
+// MkID is a constructor for the ID type. It will record where it was called
+// from and the reulting ID, when used to report an error, will give
+// information on the location which should speed up locating the test setup
+// for the failing test.
 func MkID(name string) ID {
 	id := ID{Name: name}
 	if _, file, line, ok := runtime.Caller(1); ok {
@@ -34,7 +37,7 @@ func (id ID) IDStr() string {
 // IDStrFullName returns an identifying string describing the test, using the
 // full pathname of the file where the MkID func was called rather than just
 // the last part of the path. You might want to use this if your test cases
-// are initialised in a more complex way and there is some ambiguilty as to
+// are initialised in a more complex way and there is some ambiguity as to
 // the location of a source file.
 func (id ID) IDStrFullName() string {
 	if id.AtFullName == "" {
@@ -43,7 +46,8 @@ func (id ID) IDStrFullName() string {
 	return "test: " + id.AtFullName + ":" + id.Name
 }
 
-// TestCase is an interface wrapping the IDStr method
+// TestCase is an interface wrapping the IDStr methods
 type TestCase interface {
 	IDStr() string
+	IDStrFullName() string
 }
