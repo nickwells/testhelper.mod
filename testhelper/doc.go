@@ -55,5 +55,9 @@ constructed ID string gives more information about where the test was
 constructed and several of the testhelper functions take a testhelper.ID (or
 an interface which it satisfies).
 
+There are additional mixin structs beside ID which allow you to record such
+things as whether an error is expected and if so what the error string should
+contain.
+
 */
 package testhelper
