@@ -6,7 +6,10 @@ import (
 	"runtime"
 )
 
-// ID holds common identifying information about a test
+// ID holds common identifying information about a test. Several of the
+// testhelper functions take an ID (or an interface which it satisfies) which
+// can simplify the tests. This is often combined with other testhelper mixin
+// structs to record standard details for common tests.
 type ID struct {
 	Name       string
 	At         string

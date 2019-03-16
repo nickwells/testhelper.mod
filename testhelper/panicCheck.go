@@ -11,36 +11,36 @@ import (
 // test case can then be passed to the CheckExpPanic func. It is similar to the
 // ExpErr structure in form and intended use.
 type ExpPanic struct {
-	PanicExpected      bool
-	PanicShouldContain []string
+	Expected      bool
+	ShouldContain []string
 }
 
-// MkExpPanic is a constructor for the ExpPanic struct. The PanicExpected
+// MkExpPanic is a constructor for the ExpPanic struct. The Expected
 // flag is always set to true and the slice of strings that the panic should
-// contain is set to the slice of strings passed. For a ExpPanic where a
+// contain is set to the slice of strings passed. For an ExpPanic where a
 // panic is not expected just leave it in its default state.
 func MkExpPanic(s ...string) ExpPanic {
 	return ExpPanic{
-		PanicExpected:      true,
-		PanicShouldContain: s,
+		Expected:      true,
+		ShouldContain: s,
 	}
 }
 
-// Exp returns true or false according to the value of the PanicExpected
-// field
-func (p ExpPanic) Exp() bool {
-	return p.PanicExpected
+// PanicExpected returns true or false according to the value of the
+// PanicExpected field
+func (p ExpPanic) PanicExpected() bool {
+	return p.Expected
 }
 
-// ShldCont returns the value of the ShouldContain field
-func (p ExpPanic) ShldCont() []string {
-	return p.PanicShouldContain
+// PanicShldCont returns the value of the ShouldContain field
+func (p ExpPanic) PanicShldCont() []string {
+	return p.ShouldContain
 }
 
 // TestPanic is an interface wrapping the panic expectation methods
 type TestPanic interface {
-	Exp() bool
-	ShldCont() []string
+	PanicExpected() bool
+	PanicShldCont() []string
 }
 
 // TestCaseWithPanic combines the TestCase and TestPanic interfaces
@@ -55,8 +55,8 @@ func CheckExpPanic(t *testing.T, panicked bool, panicVal interface{},
 	tp TestCaseWithPanic) bool {
 	t.Helper()
 	return PanicCheckString(t, tp.IDStr(),
-		panicked, tp.Exp(),
-		panicVal, tp.ShldCont())
+		panicked, tp.PanicExpected(),
+		panicVal, tp.PanicShldCont())
 }
 
 // CheckExpPanicWithStack calls PanicCheckStringWithStack using the details from
@@ -65,8 +65,8 @@ func CheckExpPanicWithStack(t *testing.T, panicked bool, panicVal interface{},
 	tp TestCaseWithPanic, stackTrace []byte) bool {
 	t.Helper()
 	return PanicCheckStringWithStack(t, tp.IDStr(),
-		panicked, tp.Exp(),
-		panicVal, tp.ShldCont(),
+		panicked, tp.PanicExpected(),
+		panicVal, tp.PanicShldCont(),
 		stackTrace)
 }
 

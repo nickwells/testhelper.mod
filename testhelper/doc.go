@@ -13,6 +13,14 @@ have a slice of test cases you might want this string to include the index of
 the test and possibly some descriptive name. It might be created and used as
 follows:
 
+    testcases := []struct{
+        name string
+        ...
+    }{
+        {
+            name: "whatever",
+        },
+    }
     ...
     for i, tc := range testcases {
         tcID := fmt.Sprintf("test %d: %s", i, tc.name)
@@ -20,6 +28,32 @@ follows:
         testhelper.SomeFunc(t, tcID, ...)
         ...
     }
+
+Alternatively you can construct the testcase struct with an embedded
+testhelper.ID member. Then the testcase ID can be initialised with the MkID
+func. The ID string can then be created with the IDStr() func defined on the
+testhelper.ID as follows:
+
+    testcases := []struct{
+        testhelper.ID
+        ...
+    }{
+        {
+            ID: testhelper.MkID("whatever"),
+        },
+    }
+    ...
+    for _, tc := range testcases {
+        tcID := tc.IDStr()
+        ...
+        testhelper.SomeFunc(t, tcID, ...)
+        ...
+    }
+
+This way of constructing a test case struct has the advantage that the
+constructed ID string gives more information about where the test was
+constructed and several of the testhelper functions take a testhelper.ID (or
+an interface which it satisfies).
 
 */
 package testhelper
