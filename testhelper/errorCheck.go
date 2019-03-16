@@ -4,39 +4,57 @@ import (
 	"testing"
 )
 
-// ErrInfo records common details about error expectations for a test case
-type ErrInfo struct {
+// ErrExp records common details about error expectations for a test case
+type ErrExp struct {
 	Expected      bool
 	ShouldContain []string
 }
 
+// MkErrExp is a constructor for the ErrExp struct. The Expected flag is
+// always set to true and the slice of strings that the error should contain
+// is set to the slice of strings passed. For an ErrExp where the error is
+// not expected just leave it in its default state.
+func MkErrExp(s ...string) ErrExp {
+	return ErrExp{
+		Expected:      true,
+		ShouldContain: s,
+	}
+}
+
 // Exp returns true or false according to the value of the Expected field
-func (e ErrInfo) Exp() bool {
+func (e ErrExp) Exp() bool {
 	return e.Expected
 }
 
 // ShldCont returns the value of the ShouldContain field
-func (e ErrInfo) ShldCont() []string {
+func (e ErrExp) ShldCont() []string {
 	return e.ShouldContain
 }
 
-// Err is an interface wrapping the error expectation methods
-type Err interface {
+// TestErr is an interface wrapping the error expectation methods
+type TestErr interface {
 	Exp() bool
 	ShldCont() []string
 }
 
-// TestCaseWithErr combines the TestCase and Err interfaces
+// TestCaseWithErr combines the TestCase and TestErr interfaces
 type TestCaseWithErr interface {
 	TestCase
-	Err
+	TestErr
 }
 
-// ErrCheck will call CheckError using the details from the test case to
-// supply the parameters
-func ErrCheck(t *testing.T, i int, err error, tc TestCaseWithErr) bool {
+// ErrCheck calls CheckError using the details from the test case to supply
+// the parameters
+func ErrCheck(t *testing.T, err error, tce TestCaseWithErr) bool {
 	t.Helper()
-	return CheckError(t, tc.MakeID(i), err, tc.Exp(), tc.ShldCont())
+	return CheckError(t, tce.IDStr(), err, tce.Exp(), tce.ShldCont())
+}
+
+// ErrCheckWithID calls CheckError using the details from the TestErr to
+// supply the parameters. The testID is supplied separately
+func ErrCheckWithID(t *testing.T, testID string, err error, te TestErr) bool {
+	t.Helper()
+	return CheckError(t, testID, err, te.Exp(), te.ShldCont())
 }
 
 // CheckError checks that the error is nil if it is not expected, that it is
