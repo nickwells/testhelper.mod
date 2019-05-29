@@ -1,69 +1,73 @@
 package testhelper_test
 
 import (
-	"github.com/nickwells/testhelper.mod/testhelper"
 	"testing"
+
+	"github.com/nickwells/testhelper.mod/testhelper"
 )
 
 func TestStringSliceDiff(t *testing.T) {
 	testCases := []struct {
-		name         string
+		testhelper.ID
 		s1, s2       []string
 		diffExpected bool
 	}{
 		{
-			name: "both nil",
+			ID: testhelper.MkID("both nil"),
 		},
 		{
-			name:         "first nil, second not nil",
+			ID:           testhelper.MkID("first nil, second not nil"),
 			s2:           []string{"a"},
 			diffExpected: true,
 		},
 		{
-			name:         "first not nil, second nil",
+			ID:           testhelper.MkID("first not nil, second nil"),
 			s1:           []string{"a"},
 			diffExpected: true,
 		},
 		{
-			name:         "neither nil, first shorter than second",
+			ID: testhelper.MkID(
+				"neither nil, first shorter than second"),
 			s1:           []string{"a"},
 			s2:           []string{"a", "b"},
 			diffExpected: true,
 		},
 		{
-			name:         "neither nil, second shorter than first",
+			ID: testhelper.MkID(
+				"neither nil, second shorter than first"),
 			s1:           []string{"a", "b"},
 			s2:           []string{"a"},
 			diffExpected: true,
 		},
 		{
-			name:         "same length, differing",
+			ID:           testhelper.MkID("same length, differing"),
 			s1:           []string{"a", "b"},
 			s2:           []string{"a", "c"},
 			diffExpected: true,
 		},
 		{
-			name:         "same length, same strings but reversed",
+			ID: testhelper.MkID(
+				"same length, same strings but reversed"),
 			s1:           []string{"a", "b"},
 			s2:           []string{"b", "a"},
 			diffExpected: true,
 		},
 		{
-			name: "same length, same strings",
-			s1:   []string{"a", "b"},
-			s2:   []string{"a", "b"},
+			ID: testhelper.MkID("same length, same strings"),
+			s1: []string{"a", "b"},
+			s2: []string{"a", "b"},
 		},
 	}
 
-	for i, tc := range testCases {
+	for _, tc := range testCases {
 		differs := testhelper.StringSliceDiff(tc.s1, tc.s2)
 		if differs && !tc.diffExpected {
-			t.Logf("test %d: %s :\n", i, tc.name)
+			t.Logf(tc.IDStr())
 			t.Logf("\t: %v\n", tc.s1)
 			t.Logf("\t: %v\n", tc.s2)
 			t.Errorf("\t: should not be reported as differing\n")
 		} else if !differs && tc.diffExpected {
-			t.Logf("test %d: %s :\n", i, tc.name)
+			t.Logf(tc.IDStr())
 			t.Logf("\t: %v\n", tc.s1)
 			t.Logf("\t: %v\n", tc.s2)
 			t.Errorf("\t: should be reported as differing\n")
