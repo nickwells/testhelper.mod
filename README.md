@@ -1,4 +1,4 @@
-[![GoDoc](https://godoc.org/github.com/nickwells/testhelper.mod/testhelper?status.png)](godoc)
+[![GoDoc](https://godoc.org/github.com/nickwells/testhelper.mod?status.png)]((https://godoc.org/github.com/nickwells/testhelper.mod)
 
 # testhelper.mod
 Some useful functions and types to simplify and improve testing.
