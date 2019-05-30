@@ -17,7 +17,7 @@ type ID struct {
 }
 
 // MkID is a constructor for the ID type. It will record where it was called
-// from and the reulting ID, when used to report an error, will give
+// from and the resulting ID, when used to report an error, will give
 // information on the location which should speed up locating the test setup
 // for the failing test.
 func MkID(name string) ID {
