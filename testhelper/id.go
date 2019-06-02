@@ -34,7 +34,7 @@ func (id ID) IDStr() string {
 	if id.At == "" {
 		return "test: " + id.Name
 	}
-	return "test: " + id.At + ":" + id.Name
+	return "test: " + id.At + ": " + id.Name
 }
 
 // IDStrFullName returns an identifying string describing the test, using the
@@ -46,7 +46,7 @@ func (id ID) IDStrFullName() string {
 	if id.AtFullName == "" {
 		return "test: " + id.Name
 	}
-	return "test: " + id.AtFullName + ":" + id.Name
+	return "test: " + id.AtFullName + ": " + id.Name
 }
 
 // TestCase is an interface wrapping the IDStr methods

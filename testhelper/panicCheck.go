@@ -10,6 +10,9 @@ import (
 // structure, which will also have an ID structure embedded. The resulting
 // test case can then be passed to the CheckExpPanic func. It is similar to the
 // ExpErr structure in form and intended use.
+//
+// Note that this expects any panic value to be a string and it will report
+// an error if that is not the case.
 type ExpPanic struct {
 	Expected      bool
 	ShouldContain []string
