@@ -2,7 +2,9 @@ package testhelper
 
 import (
 	"bytes"
+	"errors"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -60,7 +62,7 @@ func (gfc GoldenFileCfg) PathName(name string) string {
 // value through a command-line parameter to the test and then pass that to
 // this function as follows
 //
-//    var upd = flag.Bool("upd", false, "update the golden files")
+//    var upd = flag.Bool("upd-gf", false, "update the golden files")
 //    gfc := testhelper.GoldenFileCfg{
 //        DirNames: []string{"testdata"},
 //        Pfx:      "values",
@@ -68,13 +70,17 @@ func (gfc GoldenFileCfg) PathName(name string) string {
 //    }
 //    ...
 //    testhelper.CheckAgainstGoldenFile(t, ID, val, gfc.PathName(t.Name()), *upd)
+//
+// Then to update the golden files you would invoke the test command as follows
+//
+//    go test -upd-gf
+//
+// Give the -v argument to go test to see what is being updated
 func CheckAgainstGoldenFile(t *testing.T, testID string, val []byte, gfName string, updGF bool) bool {
 	t.Helper()
 
 	if updGF {
-		err := ioutil.WriteFile(gfName, val, 0644)
-		if err != nil {
-			t.Errorf("Couldn't update the golden file: %s", err)
+		if !updateGoldenFile(t, gfName, val) {
 			return false
 		}
 	}
@@ -95,5 +101,53 @@ func CheckAgainstGoldenFile(t *testing.T, testID string, val []byte, gfName stri
 		t.Errorf("\t: Unexpected value")
 		return false
 	}
+	return true
+}
+
+// updateGoldenFile will attempt to update the golden file with the new
+// content and return true if it succeeds or false otherwise. If there is an
+// existing golden file it will try to preverve the contents so that they can
+// be compared with the new file. It reports its progress; if the file hasn't
+// changed it does nothing.
+func updateGoldenFile(t *testing.T, gfName string, val []byte) bool {
+	t.Helper()
+
+	nameLogged := false
+	origVal, err := ioutil.ReadFile(gfName) // nolint: gosec
+	if err == nil {
+		if bytes.Equal(val, origVal) {
+			return true
+		}
+
+		t.Log("Updating golden file:", gfName)
+		nameLogged = true
+		origFileName := gfName + ".orig"
+		err = ioutil.WriteFile(origFileName, origVal, 0644)
+		if err != nil {
+			t.Log("\t: Couldn't preserve the original contents")
+			t.Error("\t: ", err)
+		} else {
+			t.Log("\t: Original contents have been preserved")
+			t.Log("\t: in:", origFileName)
+			t.Log("\t: Compare the files to see changes and then remove it")
+		}
+	} else if !errors.Is(err, os.ErrNotExist) {
+		t.Log("Updating golden file:", gfName)
+		nameLogged = true
+		t.Log("\t: Couldn't read the original contents")
+		t.Error("\t: ", err)
+	}
+
+	if !nameLogged {
+		t.Log("Creating a new golden file:", gfName)
+	}
+
+	err = ioutil.WriteFile(gfName, val, 0644)
+	if err != nil {
+		t.Log("\t: Couldn't write to the golden file")
+		t.Error("\t: ", err)
+		return false
+	}
+
 	return true
 }

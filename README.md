@@ -78,3 +78,9 @@ the golden file. You can pass a flag to get the file created initially and to
 update it when there has been a desired change in the output being
 checked. It returns true if the passed bytes match the contents of the golden
 file, false otherwise.
+
+When updating golden files the original contents are recorded in a new file
+with the same name plus a suffix of `.orig`. These can then be compared
+against the original to see the changes. It is recommended that you add a
+line to a `.gitignore` file (if you're using `git`) to make sure that you
+don't accidentally save these files.
