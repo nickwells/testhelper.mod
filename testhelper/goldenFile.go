@@ -98,7 +98,7 @@ func CheckAgainstGoldenFile(t *testing.T, testID string, val []byte, gfName stri
 		t.Log(string(expVal))
 		t.Log("\t: Actual")
 		t.Log(string(val))
-		t.Errorf("\t: Unexpected value")
+		t.Errorf("\t: The value given differs from the golden file value")
 		return false
 	}
 	return true
