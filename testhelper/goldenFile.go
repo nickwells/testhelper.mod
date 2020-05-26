@@ -7,9 +7,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
+)
+
+const (
+	pBits    = 0644
+	dirPBits = 0755
 )
 
 // AddUpdateFlag adds a new flag to the standard flag package. The flag is
@@ -217,6 +223,8 @@ func (gfc GoldenFileCfg) PathName(name string) string {
 //    go test -upd-gf
 //
 // Give the -v argument to go test to see what is being updated
+//
+// Deprecated: use the Check method on the GoldenFileCfg
 func CheckAgainstGoldenFile(t *testing.T, testID string, val []byte, gfName string, updGF bool) bool {
 	t.Helper()
 
@@ -240,9 +248,8 @@ func getExpVal(t *testing.T, id, gfName string, val []byte, updGF bool) ([]byte,
 	expVal, err := ioutil.ReadFile(gfName) // nolint: gosec
 	if err != nil {
 		t.Log(id)
-		t.Errorf("\t: Couldn't read the expected value from"+
-			" the golden file (%s): %s",
-			gfName, err)
+		t.Logf("\t: Problem with the golden file: %q", gfName)
+		t.Errorf("\t: Couldn't read the expected value. Error: %s", err)
 		return nil, false
 	}
 	return expVal, true
@@ -258,20 +265,11 @@ func checkFile(t *testing.T, id, gfName string, val []byte, updGF bool) bool {
 
 	expVal, ok := getExpVal(t, id, gfName, val, updGF)
 	if !ok {
+		t.Errorf("\t: Actual\n" + string(val))
 		return false
 	}
 
-	if !bytes.Equal(val, expVal) {
-		t.Log(id)
-		t.Log("\t: Expected")
-		t.Log(string(expVal))
-		t.Log("\t: Actual")
-		t.Log(string(val))
-		t.Errorf("\t: The value given differs from the golden file value: %q",
-			gfName)
-		return false
-	}
-	return true
+	return actEqualsExp(t, id, gfName, val, expVal)
 }
 
 // checkFile confirms that the value given matches the contents of the golden
@@ -284,31 +282,47 @@ func (gfc GoldenFileCfg) checkFile(t *testing.T, id, gfName string, val []byte) 
 
 	expVal, ok := getExpVal(t, id, gfName, val, gfc.updFlag)
 	if !ok {
-		return false
-	}
-
-	if !bytes.Equal(val, expVal) {
-		t.Log(id)
-		t.Log("\t: Expected")
-		t.Log(string(expVal))
-		t.Log("\t: Actual")
-		t.Log(string(val))
 		if gfc.UpdFlagName != "" {
 			t.Errorf("\t: To update the golden file with the new value"+
 				" pass %q to the go test command", "-"+gfc.UpdFlagName)
 		}
-		if gfc.keepBadResultsFlag {
-			keepBadResults(t, gfName, val)
-		} else if gfc.KeepBadResultsFlagName != "" {
-			t.Errorf("\t: To keep the (bad) Actual results for later"+
-				" investigation pass %q to the go test command",
-				"-"+gfc.KeepBadResultsFlagName)
-		}
-		t.Errorf("\t: The value given differs from the golden file value: %q",
-			gfName)
+		t.Errorf("\t: Actual\n" + string(val))
 		return false
 	}
-	return true
+
+	if actEqualsExp(t, id, gfName, val, expVal) {
+		return true
+	}
+
+	if gfc.UpdFlagName != "" {
+		t.Errorf("\t: To update the golden file with the new value"+
+			" pass %q to the go test command", "-"+gfc.UpdFlagName)
+	}
+	if gfc.keepBadResultsFlag {
+		keepBadResults(t, gfName, val)
+	} else if gfc.KeepBadResultsFlagName != "" {
+		t.Errorf("\t: To keep the (bad) Actual results for later"+
+			" investigation pass %q to the go test command",
+			"-"+gfc.KeepBadResultsFlagName)
+	}
+	return false
+}
+
+// actEqualsExp compares the expected value against the actual and reports any
+// difference. It will return true if they are equal and false otherwise
+func actEqualsExp(t *testing.T, id, gfName string, actVal, expVal []byte) bool {
+	t.Helper()
+
+	if bytes.Equal(actVal, expVal) {
+		return true
+	}
+
+	t.Log(id)
+	t.Log("\t: Expected\n" + string(expVal))
+	t.Log("\t: Actual\n" + string(actVal))
+	t.Errorf("\t: The value given differs from the golden file value: %q",
+		gfName)
+	return false
 }
 
 // updateGoldenFile will attempt to update the golden file with the new
@@ -319,40 +333,21 @@ func (gfc GoldenFileCfg) checkFile(t *testing.T, id, gfName string, val []byte) 
 func updateGoldenFile(t *testing.T, gfName string, val []byte) bool {
 	t.Helper()
 
-	nameLogged := false
 	origVal, err := ioutil.ReadFile(gfName) // nolint: gosec
 	if err == nil {
 		if bytes.Equal(val, origVal) {
 			return true
 		}
 
-		t.Log("Updating golden file:", gfName)
-		nameLogged = true
 		origFileName := gfName + ".orig"
-		err = ioutil.WriteFile(origFileName, origVal, 0644)
-		if err != nil {
-			t.Log("\t: Couldn't preserve the original contents")
-			t.Error("\t: ", err)
-		} else {
-			t.Log("\t: Original contents have been preserved")
-			t.Log("\t: in:", origFileName)
-			t.Log("\t: Compare the files to see changes and then remove it")
-		}
-	} else if !errors.Is(err, os.ErrNotExist) {
-		t.Log("Updating golden file:", gfName)
-		nameLogged = true
-		t.Log("\t: Couldn't read the original contents")
+		writeFile(t, origFileName, "original contents", origVal)
+	} else if !os.IsNotExist(err) {
+		t.Log("Couldn't preserve the original contents")
+		t.Logf("\t: Couldn't read the golden file: %q", gfName)
 		t.Error("\t: ", err)
 	}
 
-	if !nameLogged {
-		t.Log("Creating a new golden file:", gfName)
-	}
-
-	err = ioutil.WriteFile(gfName, val, 0644)
-	if err != nil {
-		t.Log("\t: Couldn't write to the golden file")
-		t.Error("\t: ", err)
+	if !writeFile(t, gfName, "golden", val) {
 		return false
 	}
 
@@ -364,10 +359,37 @@ func keepBadResults(t *testing.T, gfName string, val []byte) {
 	t.Helper()
 
 	fName := gfName + ".badResults"
-	t.Log("Creating a new bad results file:", fName)
-	err := ioutil.WriteFile(fName, val, 0644)
-	if err != nil {
-		t.Log("\t: Couldn't write to the bad results file")
-		t.Error("\t: ", err)
+	writeFile(t, fName, "bad results", val)
+}
+
+// writeFile will write the values into the file. If the parent directories
+// do not exist then it will create them and try again.
+func writeFile(t *testing.T, fName, desc string, val []byte) (rval bool) {
+	t.Helper()
+
+	rval = true
+	var err error
+	defer func() {
+		if err != nil {
+			t.Logf("\t: Couldn't write to the %s file", desc)
+			t.Error("\t: ", err)
+			rval = false
+		}
+	}()
+
+	t.Logf("Updating/Creating the %s file: %q", desc, fName)
+	err = ioutil.WriteFile(fName, val, pBits)
+	if os.IsNotExist(err) {
+		dir := path.Dir(fName)
+		if dir == "." {
+			return
+		}
+		err = os.MkdirAll(dir, dirPBits)
+		if err != nil {
+			return
+		}
+
+		err = ioutil.WriteFile(fName, val, pBits)
 	}
+	return
 }

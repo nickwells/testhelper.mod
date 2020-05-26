@@ -57,6 +57,7 @@ type TestCaseWithPanic interface {
 func CheckExpPanic(t *testing.T, panicked bool, panicVal interface{},
 	tp TestCaseWithPanic) bool {
 	t.Helper()
+
 	return PanicCheckString(t, tp.IDStr(),
 		panicked, tp.PanicExpected(),
 		panicVal, tp.PanicShldCont())
@@ -67,6 +68,7 @@ func CheckExpPanic(t *testing.T, panicked bool, panicVal interface{},
 func CheckExpPanicWithStack(t *testing.T, panicked bool, panicVal interface{},
 	tp TestCaseWithPanic, stackTrace []byte) bool {
 	t.Helper()
+
 	return PanicCheckStringWithStack(t, tp.IDStr(),
 		panicked, tp.PanicExpected(),
 		panicVal, tp.PanicShldCont(),
@@ -118,6 +120,8 @@ func PanicCheckStringWithStack(t *testing.T, testID string,
 // unexpected panic if true. it returns the panicked value
 func ReportUnexpectedPanic(t *testing.T, testID string,
 	panicked bool, panicVal interface{}, stackTrace []byte) bool {
+	t.Helper()
+
 	if panicked {
 		t.Log(testID)
 		t.Logf("\t: panic: %v\n", panicVal)
