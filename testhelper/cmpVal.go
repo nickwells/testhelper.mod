@@ -85,3 +85,15 @@ func CmpValUint(t *testing.T, id, name string, act, exp uint) {
 	t.Helper()
 	CmpValUint64(t, id, name, uint64(act), uint64(exp))
 }
+
+// CmpValString compares the actual against the expected value and reports an
+// error if they differ
+func CmpValString(t *testing.T, id, name, act, exp string) {
+	t.Helper()
+	if act != exp {
+		t.Log(id)
+		t.Logf("\t: expected %s: %q\n", name, exp)
+		t.Logf("\t:   actual %s: %q\n", name, act)
+		t.Errorf("\t: %s is incorrect\n", name)
+	}
+}
