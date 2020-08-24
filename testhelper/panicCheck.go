@@ -52,6 +52,24 @@ type TestCaseWithPanic interface {
 	TestPanic
 }
 
+// PanicSafe will call the passed func, check if it has panicked and return
+// true and the recovered panic value if it has and false and nil
+// otherwise. You can call it passing a closure that does the work you are
+// testing or any func matching the signature. It is intended to reduce the
+// volume of boilerplate code you need.
+func PanicSafe(f func()) (panicked bool, panicVal interface{}) {
+	defer func() {
+		if r := recover(); r != nil {
+			panicked = true
+			panicVal = r
+		}
+	}()
+
+	f()
+
+	return panicked, panicVal
+}
+
 // CheckExpPanic calls PanicCheckString using the details from the test case to
 // supply the parameters
 func CheckExpPanic(t *testing.T, panicked bool, panicVal interface{},

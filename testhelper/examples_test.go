@@ -94,7 +94,7 @@ func ExampleExpPanic() {
 		// With the testcase structure having an ID and an ExpPanic you can
 		// call
 		//
-		//     testhelper.CheckExpPanic(t, panicked, panicVa;, tc)
+		//     testhelper.CheckExpPanic(t, panicked, panicVal, tc)
 		//
 		// just passing the testing.T pointer (t), the boolean indicating
 		// whether a panic was seen , the panic value and the testcase
@@ -105,4 +105,14 @@ func ExampleExpPanic() {
 		// is useful if you get an unexpected panic and want to find out
 		// where it came from
 	}
+}
+
+// ExamplePanicSafe demonstrates how the PanicSafe function may be used
+func ExamplePanicSafe() {
+	panicked, panicVal := testhelper.PanicSafe(func() { panic("As expected") })
+	fmt.Println("Panicked:", panicked)
+	fmt.Println("PanicVal:", panicVal)
+	// Output:
+	// Panicked: true
+	// PanicVal: As expected
 }
