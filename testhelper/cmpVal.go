@@ -94,8 +94,8 @@ func CmpValString(t *testing.T, id, name, act, exp string) {
 	t.Helper()
 	if act != exp {
 		t.Log(id)
-		t.Logf("\t: expected %s: %q\n", name, exp)
-		t.Logf("\t:   actual %s: %q\n", name, act)
+		t.Logf("\t: expected %s (length: %4d): %q\n", name, len(exp), exp)
+		t.Logf("\t:   actual %s (length: %4d): %q\n", name, len(act), act)
 		t.Errorf("\t: %s is incorrect\n", name)
 	}
 }
