@@ -23,6 +23,8 @@ func CmpValFloat64(t *testing.T, id, name string, act, exp, epsilon float64) {
 		t.Log(id)
 		t.Logf("\t: expected %s: %5g\n", name, exp)
 		t.Logf("\t:   actual %s: %5g\n", name, act)
+		charCnt := len(name) + len("expected") + 1
+		t.Logf("\t: %*s: %5g\n", charCnt, "diff", math.Abs(act-exp))
 		t.Errorf("\t: %s is incorrect\n", name)
 	}
 }
@@ -94,6 +96,18 @@ func CmpValString(t *testing.T, id, name, act, exp string) {
 		t.Log(id)
 		t.Logf("\t: expected %s: %q\n", name, exp)
 		t.Logf("\t:   actual %s: %q\n", name, act)
+		t.Errorf("\t: %s is incorrect\n", name)
+	}
+}
+
+// CmpValBool compares the actual against the expected value and reports an
+// error if they differ
+func CmpValBool(t *testing.T, id, name string, act, exp bool) {
+	t.Helper()
+	if act != exp {
+		t.Log(id)
+		t.Logf("\t: expected %s: %v\n", name, exp)
+		t.Logf("\t:   actual %s: %v\n", name, act)
 		t.Errorf("\t: %s is incorrect\n", name)
 	}
 }
