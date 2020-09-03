@@ -15,9 +15,17 @@ func almostEqual(a, b, epsilon float64) bool {
 	return math.Abs(a-b) < epsilon
 }
 
-// CmpValFloat64 compares the actual against the expected value and reports
-// an error if they differ by more than epsilon
+// CmpValFloat64
+//
+// Deprecated: use DiffFloat64
 func CmpValFloat64(t *testing.T, id, name string, act, exp, epsilon float64) {
+	t.Helper()
+	DiffFloat64(t, id, name, act, exp, epsilon)
+}
+
+// DiffFloat64 compares the actual against the expected value and reports
+// an error if they differ by more than epsilon
+func DiffFloat64(t *testing.T, id, name string, act, exp, epsilon float64) bool {
 	t.Helper()
 	if !almostEqual(act, exp, epsilon) {
 		t.Log(id)
@@ -26,88 +34,173 @@ func CmpValFloat64(t *testing.T, id, name string, act, exp, epsilon float64) {
 		charCnt := len(name) + len("expected") + 1
 		t.Logf("\t: %*s: %5g\n", charCnt, "diff", math.Abs(act-exp))
 		t.Errorf("\t: %s is incorrect\n", name)
+		return true
 	}
+	return false
 }
 
-// CmpValFloat32 compares the actual against the expected value and reports
-// an error if they differ by more than epsilon
+// CmpValFloat32
+//
+// Deprecated: use DiffFloat32
 func CmpValFloat32(t *testing.T, id, name string, act, exp, epsilon float32) {
 	t.Helper()
-	CmpValFloat64(t, id, name, float64(act), float64(exp), float64(epsilon))
+	DiffFloat32(t, id, name, act, exp, epsilon)
 }
 
-// CmpValInt64 compares the actual against the expected value and reports an
-// error if they differ
+// DiffFloat32 compares the actual against the expected value and reports
+// an error if they differ by more than epsilon
+func DiffFloat32(t *testing.T, id, name string, act, exp, epsilon float32) bool {
+	t.Helper()
+	return DiffFloat64(t, id, name, float64(act), float64(exp), float64(epsilon))
+}
+
+// CmpValInt64
+//
+// Deprecated: use DiffInt64
 func CmpValInt64(t *testing.T, id, name string, act, exp int64) {
 	t.Helper()
+	DiffInt64(t, id, name, act, exp)
+}
+
+// DiffInt64 compares the actual against the expected value and reports an
+// error if they differ
+func DiffInt64(t *testing.T, id, name string, act, exp int64) bool {
+	t.Helper()
 	if act != exp {
 		t.Log(id)
 		t.Logf("\t: expected %s: %5d\n", name, exp)
 		t.Logf("\t:   actual %s: %5d\n", name, act)
+		charCnt := len(name) + len("expected") + 1
+		t.Logf("\t: %*s: %5d\n", charCnt, "diff",
+			int64(math.Abs(float64(act-exp))))
 		t.Errorf("\t: %s is incorrect\n", name)
+		return true
 	}
+	return false
 }
 
-// CmpValInt32 compares the actual against the expected value and reports an
-// error if they differ
+// CmpValInt32
+//
+// Deprecated: use DiffInt32
 func CmpValInt32(t *testing.T, id, name string, act, exp int32) {
 	t.Helper()
-	CmpValInt64(t, id, name, int64(act), int64(exp))
+	DiffInt32(t, id, name, act, exp)
 }
 
-// CmpValInt compares the actual against the expected value and reports an
+// DiffInt32 compares the actual against the expected value and reports an
 // error if they differ
+func DiffInt32(t *testing.T, id, name string, act, exp int32) bool {
+	t.Helper()
+	return DiffInt64(t, id, name, int64(act), int64(exp))
+}
+
+// CmpValInt
+//
+// Deprecated: use DiffInt
 func CmpValInt(t *testing.T, id, name string, act, exp int) {
 	t.Helper()
-	CmpValInt64(t, id, name, int64(act), int64(exp))
+	DiffInt(t, id, name, act, exp)
 }
 
-// CmpValUint64 compares the actual against the expected value and reports an
+// DiffInt compares the actual against the expected value and reports an
 // error if they differ
+func DiffInt(t *testing.T, id, name string, act, exp int) bool {
+	t.Helper()
+	return DiffInt64(t, id, name, int64(act), int64(exp))
+}
+
+// CmpValUint64
+//
+// Deprecated: use DiffUint64
 func CmpValUint64(t *testing.T, id, name string, act, exp uint64) {
+	t.Helper()
+	DiffUint64(t, id, name, act, exp)
+}
+
+// DiffUint64 compares the actual against the expected value and reports an
+// error if they differ
+func DiffUint64(t *testing.T, id, name string, act, exp uint64) bool {
 	t.Helper()
 	if act != exp {
 		t.Log(id)
 		t.Logf("\t: expected %s: %5d\n", name, exp)
 		t.Logf("\t:   actual %s: %5d\n", name, act)
 		t.Errorf("\t: %s is incorrect\n", name)
+		return true
 	}
+	return false
 }
 
-// CmpValUint32 compares the actual against the expected value and reports an
-// error if they differ
+// CmpValUint32
+//
+// Deprecated: use DiffUint32
 func CmpValUint32(t *testing.T, id, name string, act, exp uint32) {
 	t.Helper()
-	CmpValUint64(t, id, name, uint64(act), uint64(exp))
+	DiffUint32(t, id, name, act, exp)
 }
 
-// CmpValUint compares the actual against the expected value and reports an
+// DiffUint32 compares the actual against the expected value and reports an
 // error if they differ
+func DiffUint32(t *testing.T, id, name string, act, exp uint32) bool {
+	t.Helper()
+	return DiffUint64(t, id, name, uint64(act), uint64(exp))
+}
+
+// CmpValUint
+//
+// Deprecated: use DiffUint
 func CmpValUint(t *testing.T, id, name string, act, exp uint) {
 	t.Helper()
-	CmpValUint64(t, id, name, uint64(act), uint64(exp))
+	DiffUint(t, id, name, act, exp)
 }
 
-// CmpValString compares the actual against the expected value and reports an
+// DiffUint compares the actual against the expected value and reports an
 // error if they differ
+func DiffUint(t *testing.T, id, name string, act, exp uint) bool {
+	t.Helper()
+	return DiffUint64(t, id, name, uint64(act), uint64(exp))
+}
+
+// CmpValString
+//
+// Deprecated: use DiffString
 func CmpValString(t *testing.T, id, name, act, exp string) {
+	t.Helper()
+	DiffString(t, id, name, act, exp)
+}
+
+// DiffString compares the actual against the expected value and reports an
+// error if they differ
+func DiffString(t *testing.T, id, name, act, exp string) bool {
 	t.Helper()
 	if act != exp {
 		t.Log(id)
 		t.Logf("\t: expected %s (length: %4d): %q\n", name, len(exp), exp)
 		t.Logf("\t:   actual %s (length: %4d): %q\n", name, len(act), act)
 		t.Errorf("\t: %s is incorrect\n", name)
+		return true
 	}
+	return false
 }
 
-// CmpValBool compares the actual against the expected value and reports an
-// error if they differ
+// CmpValBool
+//
+// Deprecated: use DiffBool
 func CmpValBool(t *testing.T, id, name string, act, exp bool) {
+	t.Helper()
+	DiffBool(t, id, name, act, exp)
+}
+
+// DiffBool compares the actual against the expected value and reports an
+// error if they differ
+func DiffBool(t *testing.T, id, name string, act, exp bool) bool {
 	t.Helper()
 	if act != exp {
 		t.Log(id)
 		t.Logf("\t: expected %s: %v\n", name, exp)
 		t.Logf("\t:   actual %s: %v\n", name, act)
 		t.Errorf("\t: %s is incorrect\n", name)
+		return true
 	}
+	return false
 }
