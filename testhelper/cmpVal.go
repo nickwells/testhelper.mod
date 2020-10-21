@@ -183,6 +183,40 @@ func DiffString(t *testing.T, id, name, act, exp string) bool {
 	return false
 }
 
+// DiffStringSlice compares the actual against the expected value and reports an
+// error if they differ
+func DiffStringSlice(t *testing.T, id, name string, act, exp []string) bool {
+	t.Helper()
+	if len(act) != len(exp) {
+		t.Log(id)
+		t.Logf("\t: expected %s length: %4d\n", name, len(exp))
+		t.Logf("\t:   actual %s length: %4d\n", name, len(act))
+		t.Errorf("\t: %s is incorrect\n", name)
+		return true
+	}
+
+	diffCount := 0
+	for i, s := range act {
+		if s != exp[i] {
+			diffCount++
+			if diffCount == 1 {
+				t.Log(id)
+			}
+			t.Logf("\t: expected %s [%d]: %q\n", name, i, exp[i])
+			t.Logf("\t:   actual %s [%d]: %q\n", name, i, s)
+		}
+	}
+	if diffCount > 0 {
+		diffStr := "differences"
+		if diffCount == 1 {
+			diffStr = "difference"
+		}
+		t.Logf("\t: %d %s found\n", diffCount, diffStr)
+		t.Errorf("\t: %s is incorrect\n", name)
+	}
+	return diffCount > 0
+}
+
 // CmpValBool
 //
 // Deprecated: use DiffBool
