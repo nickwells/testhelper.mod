@@ -3,6 +3,7 @@ package testhelper
 import (
 	"math"
 	"testing"
+	"time"
 )
 
 // almostEqual returns true if a and b are within epsilon of one
@@ -233,6 +234,21 @@ func DiffBool(t *testing.T, id, name string, act, exp bool) bool {
 		t.Log(id)
 		t.Logf("\t: expected %s: %v\n", name, exp)
 		t.Logf("\t:   actual %s: %v\n", name, act)
+		t.Errorf("\t: %s is incorrect\n", name)
+		return true
+	}
+	return false
+}
+
+// DiffTime compares the actual against the expected value and reports an
+// error if they differ
+func DiffTime(t *testing.T, id, name string, act, exp time.Time) bool {
+	t.Helper()
+	if d := act.Sub(exp); d != 0 {
+		t.Log(id)
+		t.Logf("\t: expected %s: %v\n", name, exp)
+		t.Logf("\t:   actual %s: %v\n", name, act)
+		t.Logf("\t: difference: %v\n", d)
 		t.Errorf("\t: %s is incorrect\n", name)
 		return true
 	}
