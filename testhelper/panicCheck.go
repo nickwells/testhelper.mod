@@ -93,6 +93,30 @@ func CheckExpPanicWithStack(t *testing.T, panicked bool, panicVal interface{},
 		stackTrace)
 }
 
+// CheckExpPanicError calls PanicCheckError using the details from the test
+// case to supply the parameters
+func CheckExpPanicError(t *testing.T, panicked bool, panicVal interface{},
+	tp TestCaseWithPanic) bool {
+	t.Helper()
+
+	return PanicCheckError(t, tp.IDStr(),
+		panicked, tp.PanicExpected(),
+		panicVal, tp.PanicShldCont())
+}
+
+// CheckExpPanicErrorWithStack calls PanicCheckErrorWithStack using the
+// details from the test case to supply the parameters
+func CheckExpPanicErrorWithStack(t *testing.T,
+	panicked bool, panicVal interface{},
+	tp TestCaseWithPanic, stackTrace []byte) bool {
+	t.Helper()
+
+	return PanicCheckErrorWithStack(t, tp.IDStr(),
+		panicked, tp.PanicExpected(),
+		panicVal, tp.PanicShldCont(),
+		stackTrace)
+}
+
 // PanicCheckString tests the panic value (which should be a string) against
 // the passed values. It will report an error if the panic status is
 // unexpected.
@@ -134,6 +158,47 @@ func PanicCheckStringWithStack(t *testing.T, testID string,
 	return panicIsBad
 }
 
+// PanicCheckError tests the panic value (which should be an error) against
+// the passed values. It will report an error if the panic status is
+// unexpected.
+func PanicCheckError(t *testing.T, testID string,
+	panicked, panicExpected bool,
+	panicVal interface{}, shouldContain []string) bool {
+	t.Helper()
+
+	panicIsBad, msg :=
+		badPanicError(panicked, panicExpected, panicVal, shouldContain)
+	if panicIsBad {
+		t.Log(testID)
+		if panicked {
+			t.Logf("\t: %v\n", panicVal)
+		}
+		t.Errorf("\t: %s", msg)
+	}
+	return panicIsBad
+}
+
+// PanicCheckErrorWithStack tests the panic value (which should be an error)
+// against the passed values. A stack trace should also be passed which will
+// be printed if the panic is not as expected and a panic was seen
+func PanicCheckErrorWithStack(t *testing.T, testID string,
+	panicked, panicExpected bool,
+	panicVal interface{}, shouldContain []string, stackTrace []byte) bool {
+	t.Helper()
+
+	panicIsBad, msg :=
+		badPanicError(panicked, panicExpected, panicVal, shouldContain)
+	if panicIsBad {
+		t.Log(testID)
+		if panicked {
+			t.Logf("\t: %v\n", panicVal)
+			t.Log(string(stackTrace))
+		}
+		t.Errorf("\t: %s", msg)
+	}
+	return panicIsBad
+}
+
 // ReportUnexpectedPanic will check if panicked is true and will report the
 // unexpected panic if true. it returns the panicked value
 func ReportUnexpectedPanic(t *testing.T, testID string,
@@ -150,8 +215,9 @@ func ReportUnexpectedPanic(t *testing.T, testID string,
 	return panicked
 }
 
-// badPanicString checks whether the panic is unexpected in some way and
-// returns true and some explanatory message if so, false otherwise
+// badPanicString checks whether the panic which should be a string is
+// unexpected in some way and returns true and some explanatory message if
+// so, false otherwise
 func badPanicString(panicked, panicExpected bool,
 	panicVal interface{}, shouldContain []string) (bool, string) {
 	if !panicked && !panicExpected {
@@ -170,6 +236,37 @@ func badPanicString(panicked, panicExpected bool,
 	if !ok {
 		return true, "a panic was seen but the value was not a string"
 	}
+
+	missing := missingParts(pvStr, shouldContain)
+	if len(missing) > 0 {
+		return true, "the panic message should contain: " +
+			strings.Join(missing, "\n\t\t: and: ")
+	}
+	return false, ""
+}
+
+// badPanicError checks whether the panic which should be a error is
+// unexpected in some way and returns true and some explanatory message if
+// so, false otherwise
+func badPanicError(panicked, panicExpected bool,
+	panicVal interface{}, shouldContain []string) (bool, string) {
+	if !panicked && !panicExpected {
+		return false, ""
+	}
+
+	if panicked && !panicExpected {
+		return true, "there was an unexpected panic"
+	}
+
+	if !panicked && panicExpected {
+		return true, "a panic was expected but not seen"
+	}
+
+	pvErr, ok := panicVal.(error)
+	if !ok {
+		return true, "a panic was seen but the value was not an error"
+	}
+	pvStr := pvErr.Error()
 
 	missing := missingParts(pvStr, shouldContain)
 	if len(missing) > 0 {
