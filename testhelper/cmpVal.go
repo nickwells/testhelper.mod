@@ -1,7 +1,9 @@
 package testhelper
 
 import (
+	"fmt"
 	"math"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -182,6 +184,39 @@ func DiffString(t *testing.T, id, name, act, exp string) bool {
 		return true
 	}
 	return false
+}
+
+// DiffStringer compares the actual against the expected value and reports an
+// error if they differ. It will report them as different if one is nil or
+// has a nil value and the other isn't/doesn't or if they are both non-nil
+// and the string values differ.
+func DiffStringer(t *testing.T, id, name string, actS, expS fmt.Stringer) bool {
+	t.Helper()
+
+	actIsNil := actS == nil || reflect.ValueOf(actS).IsNil()
+	expIsNil := expS == nil || reflect.ValueOf(expS).IsNil()
+
+	if actIsNil && expIsNil {
+		return false
+	}
+
+	if actIsNil {
+		t.Log(id)
+		t.Logf("\t: expected %s is non-nil\n", name)
+		t.Logf("\t:   actual %s is nil\n", name)
+		t.Errorf("\t: %s is incorrect\n", name)
+		return true
+	}
+
+	if expIsNil {
+		t.Log(id)
+		t.Logf("\t: expected %s is nil\n", name)
+		t.Logf("\t:   actual %s is non-nil\n", name)
+		t.Errorf("\t: %s is incorrect\n", name)
+		return true
+	}
+
+	return DiffString(t, id, name, actS.String(), expS.String())
 }
 
 // DiffStringSlice compares the actual against the expected value and reports an
