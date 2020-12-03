@@ -71,7 +71,9 @@ func CheckError(t *testing.T, testID string, err error, expected bool, shouldCon
 	if err != nil {
 		if !expected {
 			t.Log(testID)
-			t.Errorf("\t: there was an unexpected err: %s\n", err)
+			t.Log("\t: unexpected error:")
+			t.Logf("\t\t%s", err)
+			t.Errorf("\t: no error was expected")
 			return false
 		}
 
@@ -80,7 +82,7 @@ func CheckError(t *testing.T, testID string, err error, expected bool, shouldCon
 
 	if expected {
 		t.Log(testID)
-		t.Errorf("\t: an error was expected but none was returned\n")
+		t.Error("\t: an error was expected but none was returned")
 		return false
 	}
 

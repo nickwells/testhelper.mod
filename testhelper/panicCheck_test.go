@@ -9,51 +9,53 @@ func TestBadPanicString(t *testing.T) {
 	testCases := []struct {
 		ID
 		ExpPanic
-		panicked       bool
-		panicVal       interface{}
-		expBad         bool
-		badMsgExpected string
+		panicked     bool
+		panicVal     interface{}
+		expBad       bool
+		msgsExpected []string
 	}{
 		{
 			ID: MkID("no panic"),
 		},
 		{
-			ID:             MkID("no panic when expected"),
-			ExpPanic:       MkExpPanic("xxx"),
-			expBad:         true,
-			badMsgExpected: "a panic was expected but not seen",
+			ID:           MkID("no panic when expected"),
+			ExpPanic:     MkExpPanic("xxx"),
+			expBad:       true,
+			msgsExpected: []string{"a panic was expected but not seen"},
 		},
 		{
-			ID:             MkID("panic when not expected"),
-			panicked:       true,
-			expBad:         true,
-			badMsgExpected: "there was an unexpected panic",
+			ID:           MkID("panic when not expected"),
+			panicked:     true,
+			expBad:       true,
+			msgsExpected: []string{"there was an unexpected panic"},
 		},
 		{
-			ID:             MkID("panic value not a string"),
-			panicked:       true,
-			panicVal:       1,
-			ExpPanic:       MkExpPanic("xxx"),
-			expBad:         true,
-			badMsgExpected: "a panic was seen but the value was not a string",
+			ID:       MkID("panic value not a string"),
+			panicked: true,
+			panicVal: 1,
+			ExpPanic: MkExpPanic("xxx"),
+			expBad:   true,
+			msgsExpected: []string{
+				"a panic was seen but was not a string: int"},
 		},
 		{
 			ID: MkID(
 				"panic value does not contain the expected value"),
-			panicked:       true,
-			panicVal:       "Hello, World!",
-			ExpPanic:       MkExpPanic("xxx"),
-			expBad:         true,
-			badMsgExpected: "the panic message should contain: xxx",
+			panicked:     true,
+			panicVal:     "Hello, World!",
+			ExpPanic:     MkExpPanic("xxx"),
+			expBad:       true,
+			msgsExpected: []string{"the panic message should contain:", "xxx"},
 		},
 		{
 			ID: MkID(
 				"panic value does not contain any of the expected values"),
-			panicked:       true,
-			panicVal:       "Hello, World!",
-			ExpPanic:       MkExpPanic("X", "Y"),
-			expBad:         true,
-			badMsgExpected: "the panic message should contain: X\n\t\t: and: Y",
+			panicked: true,
+			panicVal: "Hello, World!",
+			ExpPanic: MkExpPanic("X", "Y"),
+			expBad:   true,
+			msgsExpected: []string{
+				"the panic message should contain:", "X", "Y"},
 		},
 		{
 			ID:       MkID("panic value contains the expected values"),
@@ -64,23 +66,25 @@ func TestBadPanicString(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		panicIsBad, msg := badPanicString(tc.panicked, tc.ExpPanic.Expected,
+		var panicIsBad bool
+		msgs := badPanicString(tc.panicked, tc.ExpPanic.Expected,
 			tc.panicVal, tc.ExpPanic.ShouldContain)
+		if len(msgs) > 0 {
+			panicIsBad = true
+		}
 		if panicIsBad && !tc.expBad {
 			t.Logf(tc.IDStr())
-			t.Logf("\t: badPanic message: %s\n", msg)
+			t.Logf("\t: badPanic message:\n")
+			for _, msg := range msgs {
+				t.Log("\t\t", msg, "\n")
+			}
 			t.Errorf("\t: the panic was unexpectedly reported as bad\n")
 		} else if !panicIsBad && tc.expBad {
 			t.Logf(tc.IDStr())
 			t.Errorf(
 				"\t: the panic was expected to be reported as bad but wasn't\n")
 		} else if panicIsBad && tc.expBad {
-			if tc.badMsgExpected != msg {
-				t.Logf(tc.IDStr())
-				t.Logf("\t: badPanic message: %s\n", msg)
-				t.Errorf("\t: the message was expected to be: %s\n",
-					tc.badMsgExpected)
-			}
+			DiffStringSlice(t, tc.IDStr(), "panic value", msgs, tc.msgsExpected)
 		}
 	}
 
@@ -90,51 +94,53 @@ func TestBadPanicError(t *testing.T) {
 	testCases := []struct {
 		ID
 		ExpPanic
-		panicked       bool
-		panicVal       interface{}
-		expBad         bool
-		badMsgExpected string
+		panicked     bool
+		panicVal     interface{}
+		expBad       bool
+		msgsExpected []string
 	}{
 		{
 			ID: MkID("no panic"),
 		},
 		{
-			ID:             MkID("no panic when expected"),
-			ExpPanic:       MkExpPanic("xxx"),
-			expBad:         true,
-			badMsgExpected: "a panic was expected but not seen",
+			ID:           MkID("no panic when expected"),
+			ExpPanic:     MkExpPanic("xxx"),
+			expBad:       true,
+			msgsExpected: []string{"a panic was expected but not seen"},
 		},
 		{
-			ID:             MkID("panic when not expected"),
-			panicked:       true,
-			expBad:         true,
-			badMsgExpected: "there was an unexpected panic",
+			ID:           MkID("panic when not expected"),
+			panicked:     true,
+			expBad:       true,
+			msgsExpected: []string{"there was an unexpected panic"},
 		},
 		{
-			ID:             MkID("panic value not an error"),
-			panicked:       true,
-			panicVal:       1,
-			ExpPanic:       MkExpPanic("xxx"),
-			expBad:         true,
-			badMsgExpected: "a panic was seen but the value was not an error",
+			ID:       MkID("panic value not an error"),
+			panicked: true,
+			panicVal: 1,
+			ExpPanic: MkExpPanic("xxx"),
+			expBad:   true,
+			msgsExpected: []string{
+				"a panic was seen but was not an error: int"},
 		},
 		{
 			ID: MkID(
 				"panic value does not contain the expected value"),
-			panicked:       true,
-			panicVal:       errors.New("hello, world"),
-			ExpPanic:       MkExpPanic("xxx"),
-			expBad:         true,
-			badMsgExpected: "the panic message should contain: xxx",
+			panicked:     true,
+			panicVal:     errors.New("hello, world"),
+			ExpPanic:     MkExpPanic("xxx"),
+			expBad:       true,
+			msgsExpected: []string{"the panic message should contain:", "xxx"},
 		},
 		{
 			ID: MkID(
 				"panic value does not contain any of the expected values"),
-			panicked:       true,
-			panicVal:       errors.New("hello, world"),
-			ExpPanic:       MkExpPanic("X", "Y"),
-			expBad:         true,
-			badMsgExpected: "the panic message should contain: X\n\t\t: and: Y",
+			panicked: true,
+			panicVal: errors.New("hello, world"),
+			ExpPanic: MkExpPanic("X", "Y"),
+			expBad:   true,
+			msgsExpected: []string{
+				"the panic message should contain:", "X", "Y"},
 		},
 		{
 			ID:       MkID("panic value contains the expected values"),
@@ -145,23 +151,25 @@ func TestBadPanicError(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		panicIsBad, msg := badPanicError(tc.panicked, tc.ExpPanic.Expected,
+		var panicIsBad bool
+		msgs := badPanicError(tc.panicked, tc.ExpPanic.Expected,
 			tc.panicVal, tc.ExpPanic.ShouldContain)
+		if len(msgs) > 0 {
+			panicIsBad = true
+		}
 		if panicIsBad && !tc.expBad {
 			t.Logf(tc.IDStr())
-			t.Logf("\t: badPanic message: %s\n", msg)
+			t.Logf("\t: badPanic message:\n")
+			for _, msg := range msgs {
+				t.Log("\t\t", msg, "\n")
+			}
 			t.Errorf("\t: the panic was unexpectedly reported as bad\n")
 		} else if !panicIsBad && tc.expBad {
 			t.Logf(tc.IDStr())
 			t.Errorf(
 				"\t: the panic was expected to be reported as bad but wasn't\n")
 		} else if panicIsBad && tc.expBad {
-			if tc.badMsgExpected != msg {
-				t.Logf(tc.IDStr())
-				t.Logf("\t: badPanic message: %s\n", msg)
-				t.Errorf("\t: the message was expected to be: %s\n",
-					tc.badMsgExpected)
-			}
+			DiffStringSlice(t, tc.IDStr(), "panic value", msgs, tc.msgsExpected)
 		}
 	}
 

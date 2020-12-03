@@ -1,7 +1,7 @@
 package testhelper
 
 import (
-	"strings"
+	"fmt"
 	"testing"
 )
 
@@ -125,16 +125,12 @@ func PanicCheckString(t *testing.T, testID string,
 	panicVal interface{}, shouldContain []string) bool {
 	t.Helper()
 
-	panicIsBad, msg :=
-		badPanicString(panicked, panicExpected, panicVal, shouldContain)
-	if panicIsBad {
+	msgs := badPanicString(panicked, panicExpected, panicVal, shouldContain)
+	if len(msgs) > 0 {
 		t.Log(testID)
-		if panicked {
-			t.Logf("\t: %v\n", panicVal)
-		}
-		t.Errorf("\t: %s", msg)
+		showPanicMsgs(t, panicked, panicVal, msgs)
 	}
-	return panicIsBad
+	return len(msgs) > 0
 }
 
 // PanicCheckStringWithStack tests the panic value (which should be a string)
@@ -145,17 +141,15 @@ func PanicCheckStringWithStack(t *testing.T, testID string,
 	panicVal interface{}, shouldContain []string, stackTrace []byte) bool {
 	t.Helper()
 
-	panicIsBad, msg :=
-		badPanicString(panicked, panicExpected, panicVal, shouldContain)
-	if panicIsBad {
+	msgs := badPanicString(panicked, panicExpected, panicVal, shouldContain)
+	if len(msgs) > 0 {
 		t.Log(testID)
 		if panicked {
-			t.Logf("\t: %v\n", panicVal)
 			t.Log(string(stackTrace))
 		}
-		t.Errorf("\t: %s", msg)
+		showPanicMsgs(t, panicked, panicVal, msgs)
 	}
-	return panicIsBad
+	return len(msgs) > 0
 }
 
 // PanicCheckError tests the panic value (which should be an error) against
@@ -166,16 +160,12 @@ func PanicCheckError(t *testing.T, testID string,
 	panicVal interface{}, shouldContain []string) bool {
 	t.Helper()
 
-	panicIsBad, msg :=
-		badPanicError(panicked, panicExpected, panicVal, shouldContain)
-	if panicIsBad {
+	msgs := badPanicError(panicked, panicExpected, panicVal, shouldContain)
+	if len(msgs) > 0 {
 		t.Log(testID)
-		if panicked {
-			t.Logf("\t: %v\n", panicVal)
-		}
-		t.Errorf("\t: %s", msg)
+		showPanicMsgs(t, panicked, panicVal, msgs)
 	}
-	return panicIsBad
+	return len(msgs) > 0
 }
 
 // PanicCheckErrorWithStack tests the panic value (which should be an error)
@@ -186,17 +176,15 @@ func PanicCheckErrorWithStack(t *testing.T, testID string,
 	panicVal interface{}, shouldContain []string, stackTrace []byte) bool {
 	t.Helper()
 
-	panicIsBad, msg :=
-		badPanicError(panicked, panicExpected, panicVal, shouldContain)
-	if panicIsBad {
+	msgs := badPanicError(panicked, panicExpected, panicVal, shouldContain)
+	if len(msgs) > 0 {
 		t.Log(testID)
 		if panicked {
-			t.Logf("\t: %v\n", panicVal)
 			t.Log(string(stackTrace))
 		}
-		t.Errorf("\t: %s", msg)
+		showPanicMsgs(t, panicked, panicVal, msgs)
 	}
-	return panicIsBad
+	return len(msgs) > 0
 }
 
 // ReportUnexpectedPanic will check if panicked is true and will report the
@@ -207,7 +195,7 @@ func ReportUnexpectedPanic(t *testing.T, testID string,
 
 	if panicked {
 		t.Log(testID)
-		t.Logf("\t: panic: %v\n", panicVal)
+		t.Logf("\t: panic: %v", panicVal)
 		t.Log("\t: At:", string(stackTrace))
 		t.Error("\t: An unexpected panic was seen")
 	}
@@ -219,59 +207,80 @@ func ReportUnexpectedPanic(t *testing.T, testID string,
 // unexpected in some way and returns true and some explanatory message if
 // so, false otherwise
 func badPanicString(panicked, panicExpected bool,
-	panicVal interface{}, shouldContain []string) (bool, string) {
-	if !panicked && !panicExpected {
-		return false, ""
-	}
-
-	if panicked && !panicExpected {
-		return true, "there was an unexpected panic"
-	}
-
-	if !panicked && panicExpected {
-		return true, "a panic was expected but not seen"
+	panicVal interface{}, shouldContain []string) []string {
+	if !(panicked && panicExpected) {
+		return badPanic(panicked, panicExpected)
 	}
 
 	pvStr, ok := panicVal.(string)
 	if !ok {
-		return true, "a panic was seen but the value was not a string"
+		return []string{
+			fmt.Sprintf("a panic was seen but was not a string: %T", panicVal),
+		}
 	}
 
-	missing := missingParts(pvStr, shouldContain)
-	if len(missing) > 0 {
-		return true, "the panic message should contain: " +
-			strings.Join(missing, "\n\t\t: and: ")
-	}
-	return false, ""
+	return badPanicVal(pvStr, shouldContain)
 }
 
 // badPanicError checks whether the panic which should be a error is
 // unexpected in some way and returns true and some explanatory message if
 // so, false otherwise
 func badPanicError(panicked, panicExpected bool,
-	panicVal interface{}, shouldContain []string) (bool, string) {
-	if !panicked && !panicExpected {
-		return false, ""
-	}
-
-	if panicked && !panicExpected {
-		return true, "there was an unexpected panic"
-	}
-
-	if !panicked && panicExpected {
-		return true, "a panic was expected but not seen"
+	panicVal interface{}, shouldContain []string) []string {
+	if !(panicked && panicExpected) {
+		return badPanic(panicked, panicExpected)
 	}
 
 	pvErr, ok := panicVal.(error)
 	if !ok {
-		return true, "a panic was seen but the value was not an error"
+		return []string{
+			fmt.Sprintf("a panic was seen but was not an error: %T", panicVal),
+		}
 	}
 	pvStr := pvErr.Error()
 
-	missing := missingParts(pvStr, shouldContain)
+	return badPanicVal(pvStr, shouldContain)
+}
+
+// badPanicVal checks the panic value
+func badPanicVal(act string, exp []string) []string {
+	missing := missingParts(act, exp)
 	if len(missing) > 0 {
-		return true, "the panic message should contain: " +
-			strings.Join(missing, "\n\t\t: and: ")
+		rval := []string{"the panic message should contain:"}
+		return append(rval, missing...)
 	}
-	return false, ""
+	return nil
+}
+
+// badPanic checks the flags
+func badPanic(panicked, panicExpected bool) []string {
+	if !panicked && !panicExpected {
+		return nil
+	}
+
+	if panicked && !panicExpected {
+		return []string{"there was an unexpected panic"}
+	}
+
+	if !panicked && panicExpected {
+		return []string{"a panic was expected but not seen"}
+	}
+	return []string{"badPanic has been called unexpectedly"}
+}
+
+// showPanicMsgs reports the problems found with the panic
+func showPanicMsgs(t *testing.T, panicked bool, pv interface{}, msgs []string) {
+	t.Helper()
+	if len(msgs) > 0 {
+		if panicked {
+			t.Log("\t: Panic value:")
+			t.Logf("\t\t%v", pv)
+		}
+		intro := "\t: "
+		for _, msg := range msgs {
+			t.Log(intro + msg)
+			intro = "\t\t"
+		}
+		t.Error("\t: Bad Panic")
+	}
 }
