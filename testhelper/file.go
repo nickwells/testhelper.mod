@@ -19,11 +19,11 @@ func MakeTempDir(name string, perms os.FileMode) func() {
 
 	err = os.Chmod(name, perms&os.ModePerm)
 	if err != nil {
-		os.Remove(name)
+		_ = os.Remove(name)
 		panic(err)
 	}
 
-	return func() { os.Remove(name) }
+	return func() { _ = os.Remove(name) }
 }
 
 // TempChmod will change the FileMode of the named file and return a function
@@ -45,5 +45,5 @@ func TempChmod(name string, perms os.FileMode) func() {
 		panic(err)
 	}
 
-	return func() { os.Chmod(name, fi.Mode()&os.ModePerm) }
+	return func() { _ = os.Chmod(name, fi.Mode()&os.ModePerm) }
 }

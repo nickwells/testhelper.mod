@@ -46,7 +46,7 @@ func TestMakeTempDir(t *testing.T) {
 			err)
 	}
 	cleanup()
-	fi, err = os.Stat(tempDir)
+	_, err = os.Stat(tempDir)
 	if err == nil {
 		t.Errorf("The temp directory %q should not exist but does", tempDir)
 	} else if !os.IsNotExist(err) {
@@ -107,11 +107,11 @@ func TestTempChmodNoFile(t *testing.T) {
 	err, ok := panicVal.(*os.PathError)
 	if !ok {
 		t.Errorf("Unexpected panic val when calling TempChmod"+
-			" with a non-existant file: %s",
+			" with a non-existent file: %s",
 			panicVal)
 	} else if !os.IsNotExist(err) {
 		t.Errorf("Unexpected PathError when calling TempChmod"+
-			" with a non-existant file: %s",
+			" with a non-existent file: %s",
 			err)
 	}
 }
