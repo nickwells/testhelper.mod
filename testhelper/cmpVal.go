@@ -289,3 +289,25 @@ func DiffTime(t *testing.T, id, name string, act, exp time.Time) bool {
 	}
 	return false
 }
+
+// DiffErr compares the actual against the expected value and reports an
+// error if they differ. Note that it compares the string representation and
+// not the error type so there might be a mismatch.
+func DiffErr(t *testing.T, id, name string, act, exp error) bool {
+	t.Helper()
+
+	if act == nil && exp == nil {
+		return false
+	}
+
+	if act == nil && exp != nil ||
+		act != nil && exp == nil ||
+		act.Error() != exp.Error() {
+		t.Log(id)
+		t.Logf("\t: expected %s: %v\n", name, exp)
+		t.Logf("\t:   actual %s: %v\n", name, act)
+		t.Errorf("\t: %s is incorrect\n", name)
+		return true
+	}
+	return false
+}
