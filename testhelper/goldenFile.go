@@ -5,7 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -245,7 +244,7 @@ func getExpVal(t *testing.T, id, gfName string, val []byte, updGF bool) ([]byte,
 		}
 	}
 
-	expVal, err := ioutil.ReadFile(gfName) // nolint: gosec
+	expVal, err := os.ReadFile(gfName) // nolint: gosec
 	if err != nil {
 		t.Log(id)
 		t.Logf("\t: Problem with the golden file: %q", gfName)
@@ -333,7 +332,7 @@ func actEqualsExp(t *testing.T, id, gfName string, actVal, expVal []byte) bool {
 func updateGoldenFile(t *testing.T, gfName string, val []byte) bool {
 	t.Helper()
 
-	origVal, err := ioutil.ReadFile(gfName) // nolint: gosec
+	origVal, err := os.ReadFile(gfName) // nolint: gosec
 	if err == nil {
 		if bytes.Equal(val, origVal) {
 			return true
@@ -378,7 +377,7 @@ func writeFile(t *testing.T, fName, desc string, val []byte) (rval bool) {
 	}()
 
 	t.Logf("Updating/Creating the %s file: %q", desc, fName)
-	err = ioutil.WriteFile(fName, val, pBits)
+	err = os.WriteFile(fName, val, pBits)
 	if os.IsNotExist(err) {
 		dir := path.Dir(fName)
 		if dir == "." {
@@ -389,7 +388,7 @@ func writeFile(t *testing.T, fName, desc string, val []byte) (rval bool) {
 			return
 		}
 
-		err = ioutil.WriteFile(fName, val, pBits)
+		err = os.WriteFile(fName, val, pBits)
 	}
 	return
 }
