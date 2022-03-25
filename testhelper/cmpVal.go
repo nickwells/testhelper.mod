@@ -6,32 +6,38 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"golang.org/x/exp/constraints"
 )
 
 // almostEqual returns true if a and b are within epsilon of one
 // another. Copied from github.com/nickwells/mathutil.mod/mathutil
-func almostEqual(a, b, epsilon float64) bool {
+func almostEqual[T constraints.Float](a, b, epsilon T) bool {
 	if a == b {
 		return true
 	}
 
-	return math.Abs(a-b) < epsilon
+	return math.Abs(float64(a-b)) < float64(epsilon)
 }
 
 // reportFloatDiff reports the difference between two float values
-func reportFloatDiff(t *testing.T, name string, act, exp float64) {
+func reportFloatDiff[T constraints.Float](t *testing.T, name string,
+	act, exp T,
+) {
 	t.Helper()
 
 	t.Logf("\t: expected %s: %5g\n", name, exp)
 	t.Logf("\t:   actual %s: %5g\n", name, act)
 	charCnt := len(name) + len("expected") + 1
-	t.Logf("\t: %*s: %5g\n", charCnt, "diff", math.Abs(act-exp))
+	t.Logf("\t: %*s: %5g\n", charCnt, "diff", math.Abs(float64(act-exp)))
 	t.Errorf("\t: %s is incorrect\n", name)
 }
 
-// DiffFloat64 compares the actual against the expected value and reports
+// DiffFloat compares the actual against the expected value and reports
 // an error if they differ by more than epsilon
-func DiffFloat64(t *testing.T, id, name string, act, exp, epsilon float64) bool {
+func DiffFloat[T constraints.Float](t *testing.T, id, name string,
+	act, exp, epsilon T,
+) bool {
 	t.Helper()
 	if !almostEqual(act, exp, epsilon) {
 		t.Log(id)
@@ -39,13 +45,6 @@ func DiffFloat64(t *testing.T, id, name string, act, exp, epsilon float64) bool 
 		return true
 	}
 	return false
-}
-
-// DiffFloat32 compares the actual against the expected value and reports
-// an error if they differ by more than epsilon
-func DiffFloat32(t *testing.T, id, name string, act, exp, epsilon float32) bool {
-	t.Helper()
-	return DiffFloat64(t, id, name, float64(act), float64(exp), float64(epsilon))
 }
 
 // DiffInt64 compares the actual against the expected value and reports an
