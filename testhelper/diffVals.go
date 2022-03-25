@@ -6,7 +6,7 @@ import (
 )
 
 // DiffValErr holds an error reflecting the difference between two interface
-// values. It is the type of error returned by the DiffVal func
+// values. It is the type of error returned by the DiffVals func
 type DiffValErr struct {
 	dl  deepLoc
 	msg string
@@ -96,7 +96,7 @@ func addIdx(dl deepLoc, i int) deepLoc {
 
 // addKey adds the key to the formatted name. It returns a copy of the
 // amended value.
-func addKey(dl deepLoc, k interface{}) deepLoc {
+func addKey(dl deepLoc, k any) deepLoc {
 	dl.fullName += fmt.Sprintf("[%v]", k)
 	return dl
 }
@@ -130,7 +130,7 @@ func (dl deepLoc) skip() bool {
 // represents a chain of names in nested structs. So, for instance an ignore
 // value containing the pair of values ["a", "b"] means to not compare the
 // field called "b" in the sub-struct called "a".
-func DiffVals(actVal, expVal interface{}, ignore ...[]string) error {
+func DiffVals(actVal, expVal any, ignore ...[]string) error {
 	if actVal == nil && expVal == nil {
 		return nil
 	}

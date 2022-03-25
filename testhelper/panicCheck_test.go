@@ -10,7 +10,7 @@ func TestBadPanicString(t *testing.T) {
 		ID
 		ExpPanic
 		panicked bool
-		panicVal interface{}
+		panicVal any
 		expBad   bool
 		expMsgs  []string
 	}{
@@ -92,7 +92,7 @@ func TestBadPanicError(t *testing.T) {
 		ID
 		ExpPanic
 		panicked bool
-		panicVal interface{}
+		panicVal any
 		expBad   bool
 		expMsgs  []string
 	}{

@@ -47,20 +47,20 @@ func TestDiffVals(t *testing.T) {
 	j := 0
 	k := 1
 
-	loopyMap := make(map[string]interface{})
+	loopyMap := make(map[string]any)
 	loopyMap["loop"] = loopyMap
-	var nilMap map[string]interface{}
+	var nilMap map[string]any
 
-	var loopyArray1 [3]interface{}
+	var loopyArray1 [3]any
 	loopyArray1[0] = &loopyArray1
-	var loopyArray2 [3]interface{}
+	var loopyArray2 [3]any
 	loopyArray2[0] = &loopyArray2
 
-	loopySlice1 := make([]interface{}, 0)
+	loopySlice1 := make([]any, 0)
 	loopySlice1 = append(loopySlice1, &loopySlice1)
-	loopySlice2 := make([]interface{}, 0)
+	loopySlice2 := make([]any, 0)
 	loopySlice2 = append(loopySlice2, &loopySlice2)
-	var nilSlice []interface{}
+	var nilSlice []any
 
 	msl1 := myStructLoopy{i: 42, f: 3.14159}
 	msl1.msl = &msl1
@@ -83,8 +83,8 @@ func TestDiffVals(t *testing.T) {
 
 	testCases := []struct {
 		testhelper.ID
-		actVal interface{}
-		expVal interface{}
+		actVal any
+		expVal any
 		ignore [][]string
 		testhelper.ExpErr
 	}{
@@ -179,13 +179,13 @@ func TestDiffVals(t *testing.T) {
 		},
 		{
 			ID:     testhelper.MkID("same val, map"),
-			actVal: map[string]interface{}{"a": "A", "b": 42},
-			expVal: map[string]interface{}{"a": "A", "b": 42},
+			actVal: map[string]any{"a": "A", "b": 42},
+			expVal: map[string]any{"a": "A", "b": 42},
 		},
 		{
 			ID:     testhelper.MkID("map, act nil"),
 			actVal: nilMap,
-			expVal: map[string]interface{}{},
+			expVal: map[string]any{},
 		},
 		{
 			ID:     testhelper.MkID("loopy map"),
@@ -194,36 +194,36 @@ func TestDiffVals(t *testing.T) {
 		},
 		{
 			ID:     testhelper.MkID("value diff by len, map"),
-			actVal: map[string]interface{}{"a": "A", "b": 42},
-			expVal: map[string]interface{}{"a": "A"},
+			actVal: map[string]any{"a": "A", "b": 42},
+			expVal: map[string]any{"a": "A"},
 			ExpErr: testhelper.MkExpErr(`this: map lengths differ.`,
 				`Actual: 2, expected: 1`),
 		},
 		{
 			ID:     testhelper.MkID("value diff by keys, map"),
-			actVal: map[string]interface{}{"a": "A", "b": 42},
-			expVal: map[string]interface{}{"a": "A", "c": 42},
+			actVal: map[string]any{"a": "A", "b": 42},
+			expVal: map[string]any{"a": "A", "c": 42},
 			ExpErr: testhelper.MkExpErr(`this[b]:` +
 				` the expected value is invalid, the actual value is not`),
 		},
 		{
 			ID:     testhelper.MkID("value diff by value, map"),
-			actVal: map[string]interface{}{"a": "A", "b": 42},
-			expVal: map[string]interface{}{"a": "Not-A", "b": 42},
+			actVal: map[string]any{"a": "A", "b": 42},
+			expVal: map[string]any{"a": "Not-A", "b": 42},
 			ExpErr: testhelper.MkExpErr(`this[a]: strings differ.`,
 				`Actual: "A", expected: "Not-A"`),
 		},
 		{
 			ID:     testhelper.MkID("value diff by type, map"),
-			actVal: map[string]interface{}{"a": "A", "b": 42},
-			expVal: map[string]interface{}{"a": 3.14159, "b": 42},
+			actVal: map[string]any{"a": "A", "b": 42},
+			expVal: map[string]any{"a": 3.14159, "b": 42},
 			ExpErr: testhelper.MkExpErr(`this[a]: types differ.`,
 				"Actual: string, expected: float64"),
 		},
 		{
 			ID:     testhelper.MkID("same val, array"),
-			actVal: [...]interface{}{42, 3.14159, "Hello", "World", myFunc},
-			expVal: [...]interface{}{42, 3.14159, "Hello", "World", myFunc},
+			actVal: [...]any{42, 3.14159, "Hello", "World", myFunc},
+			expVal: [...]any{42, 3.14159, "Hello", "World", myFunc},
 		},
 		{
 			ID:     testhelper.MkID("loopy array"),
@@ -232,27 +232,27 @@ func TestDiffVals(t *testing.T) {
 		},
 		{
 			ID:     testhelper.MkID("value diff by value, array"),
-			actVal: [...]interface{}{42, 3.14159, "Hello", "World", myFunc},
-			expVal: [...]interface{}{1, 3.14159, "Hello", "World", myFunc},
+			actVal: [...]any{42, 3.14159, "Hello", "World", myFunc},
+			expVal: [...]any{1, 3.14159, "Hello", "World", myFunc},
 			ExpErr: testhelper.MkExpErr(`this[0]: int values differ.`,
 				"Actual: 42, expected: 1"),
 		},
 		{
 			ID:     testhelper.MkID("value diff by type, array"),
-			actVal: [...]interface{}{42, 3.14159, "Hello", "World", myFunc},
-			expVal: [...]interface{}{1.2, 3.14159, "Hello", "World", myFunc},
+			actVal: [...]any{42, 3.14159, "Hello", "World", myFunc},
+			expVal: [...]any{1.2, 3.14159, "Hello", "World", myFunc},
 			ExpErr: testhelper.MkExpErr(`this[0]: types differ.`,
 				"Actual: int, expected: float64"),
 		},
 		{
 			ID:     testhelper.MkID("same val, slice"),
-			actVal: []interface{}{42, 3.14159, "Hello", "World", myFunc},
-			expVal: []interface{}{42, 3.14159, "Hello", "World", myFunc},
+			actVal: []any{42, 3.14159, "Hello", "World", myFunc},
+			expVal: []any{42, 3.14159, "Hello", "World", myFunc},
 		},
 		{
 			ID:     testhelper.MkID("slice, act nil"),
 			actVal: nilSlice,
-			expVal: []interface{}{},
+			expVal: []any{},
 		},
 		{
 			ID:     testhelper.MkID("loopy slice"),
@@ -261,22 +261,22 @@ func TestDiffVals(t *testing.T) {
 		},
 		{
 			ID:     testhelper.MkID("value diff by length, slice"),
-			actVal: []interface{}{42, 3.14159, "Hello", "World", myFunc},
-			expVal: []interface{}{42, 3.14159, "Hello", "World"},
+			actVal: []any{42, 3.14159, "Hello", "World", myFunc},
+			expVal: []any{42, 3.14159, "Hello", "World"},
 			ExpErr: testhelper.MkExpErr(`this: slice lengths differ.`,
 				"Actual: 5, expected: 4"),
 		},
 		{
 			ID:     testhelper.MkID("value diff by value, slice"),
-			actVal: []interface{}{42, 3.14159, "Hello", "World", myFunc},
-			expVal: []interface{}{1, 3.14159, "Hello", "World", myFunc},
+			actVal: []any{42, 3.14159, "Hello", "World", myFunc},
+			expVal: []any{1, 3.14159, "Hello", "World", myFunc},
 			ExpErr: testhelper.MkExpErr(`this[0]: int values differ.`,
 				"Actual: 42, expected: 1"),
 		},
 		{
 			ID:     testhelper.MkID("value diff by type, slice"),
-			actVal: []interface{}{42, 3.14159, "Hello", "World", myFunc},
-			expVal: []interface{}{1.2, 3.14159, "Hello", "World", myFunc},
+			actVal: []any{42, 3.14159, "Hello", "World", myFunc},
+			expVal: []any{1.2, 3.14159, "Hello", "World", myFunc},
 			ExpErr: testhelper.MkExpErr(`this[0]: types differ.`,
 				"Actual: int, expected: float64"),
 		},

@@ -57,7 +57,7 @@ type TestCaseWithPanic interface {
 // otherwise. You can call it passing a closure that does the work you are
 // testing or any func matching the signature. It is intended to reduce the
 // volume of boilerplate code you need.
-func PanicSafe(f func()) (panicked bool, panicVal interface{}) {
+func PanicSafe(f func()) (panicked bool, panicVal any) {
 	defer func() {
 		if r := recover(); r != nil {
 			panicked = true
@@ -72,8 +72,10 @@ func PanicSafe(f func()) (panicked bool, panicVal interface{}) {
 
 // CheckExpPanic calls PanicCheckString using the details from the test case to
 // supply the parameters
-func CheckExpPanic(t *testing.T, panicked bool, panicVal interface{},
-	tp TestCaseWithPanic) bool {
+func CheckExpPanic(
+	t *testing.T, panicked bool, panicVal any,
+	tp TestCaseWithPanic,
+) bool {
 	t.Helper()
 
 	return PanicCheckString(t, tp.IDStr(),
@@ -83,8 +85,10 @@ func CheckExpPanic(t *testing.T, panicked bool, panicVal interface{},
 
 // CheckExpPanicWithStack calls PanicCheckStringWithStack using the details from
 // the test case to supply the parameters
-func CheckExpPanicWithStack(t *testing.T, panicked bool, panicVal interface{},
-	tp TestCaseWithPanic, stackTrace []byte) bool {
+func CheckExpPanicWithStack(
+	t *testing.T, panicked bool, panicVal any,
+	tp TestCaseWithPanic, stackTrace []byte,
+) bool {
 	t.Helper()
 
 	return PanicCheckStringWithStack(t, tp.IDStr(),
@@ -95,8 +99,9 @@ func CheckExpPanicWithStack(t *testing.T, panicked bool, panicVal interface{},
 
 // CheckExpPanicError calls PanicCheckError using the details from the test
 // case to supply the parameters
-func CheckExpPanicError(t *testing.T, panicked bool, panicVal interface{},
-	tp TestCaseWithPanic) bool {
+func CheckExpPanicError(t *testing.T, panicked bool, panicVal any,
+	tp TestCaseWithPanic,
+) bool {
 	t.Helper()
 
 	return PanicCheckError(t, tp.IDStr(),
@@ -107,8 +112,9 @@ func CheckExpPanicError(t *testing.T, panicked bool, panicVal interface{},
 // CheckExpPanicErrorWithStack calls PanicCheckErrorWithStack using the
 // details from the test case to supply the parameters
 func CheckExpPanicErrorWithStack(t *testing.T,
-	panicked bool, panicVal interface{},
-	tp TestCaseWithPanic, stackTrace []byte) bool {
+	panicked bool, panicVal any,
+	tp TestCaseWithPanic, stackTrace []byte,
+) bool {
 	t.Helper()
 
 	return PanicCheckErrorWithStack(t, tp.IDStr(),
@@ -122,7 +128,8 @@ func CheckExpPanicErrorWithStack(t *testing.T,
 // unexpected.
 func PanicCheckString(t *testing.T, testID string,
 	panicked, panicExpected bool,
-	panicVal interface{}, shouldContain []string) bool {
+	panicVal any, shouldContain []string,
+) bool {
 	t.Helper()
 
 	msgs := badPanicString(panicked, panicExpected, panicVal, shouldContain)
@@ -138,7 +145,8 @@ func PanicCheckString(t *testing.T, testID string,
 // be printed if the panic is not as expected and a panic was seen
 func PanicCheckStringWithStack(t *testing.T, testID string,
 	panicked, panicExpected bool,
-	panicVal interface{}, shouldContain []string, stackTrace []byte) bool {
+	panicVal any, shouldContain []string, stackTrace []byte,
+) bool {
 	t.Helper()
 
 	msgs := badPanicString(panicked, panicExpected, panicVal, shouldContain)
@@ -157,7 +165,8 @@ func PanicCheckStringWithStack(t *testing.T, testID string,
 // unexpected.
 func PanicCheckError(t *testing.T, testID string,
 	panicked, panicExpected bool,
-	panicVal interface{}, shouldContain []string) bool {
+	panicVal any, shouldContain []string,
+) bool {
 	t.Helper()
 
 	msgs := badPanicError(panicked, panicExpected, panicVal, shouldContain)
@@ -173,7 +182,8 @@ func PanicCheckError(t *testing.T, testID string,
 // be printed if the panic is not as expected and a panic was seen
 func PanicCheckErrorWithStack(t *testing.T, testID string,
 	panicked, panicExpected bool,
-	panicVal interface{}, shouldContain []string, stackTrace []byte) bool {
+	panicVal any, shouldContain []string, stackTrace []byte,
+) bool {
 	t.Helper()
 
 	msgs := badPanicError(panicked, panicExpected, panicVal, shouldContain)
@@ -190,7 +200,8 @@ func PanicCheckErrorWithStack(t *testing.T, testID string,
 // ReportUnexpectedPanic will check if panicked is true and will report the
 // unexpected panic if true. it returns the panicked value
 func ReportUnexpectedPanic(t *testing.T, testID string,
-	panicked bool, panicVal interface{}, stackTrace []byte) bool {
+	panicked bool, panicVal any, stackTrace []byte,
+) bool {
 	t.Helper()
 
 	if panicked {
@@ -207,7 +218,8 @@ func ReportUnexpectedPanic(t *testing.T, testID string,
 // unexpected in some way and returns true and some explanatory message if
 // so, false otherwise
 func badPanicString(panicked, panicExpected bool,
-	panicVal interface{}, shouldContain []string) []string {
+	panicVal any, shouldContain []string,
+) []string {
 	if !(panicked && panicExpected) {
 		return badPanic(panicked, panicExpected)
 	}
@@ -226,7 +238,8 @@ func badPanicString(panicked, panicExpected bool,
 // unexpected in some way and returns true and some explanatory message if
 // so, false otherwise
 func badPanicError(panicked, panicExpected bool,
-	panicVal interface{}, shouldContain []string) []string {
+	panicVal any, shouldContain []string,
+) []string {
 	if !(panicked && panicExpected) {
 		return badPanic(panicked, panicExpected)
 	}
@@ -269,7 +282,7 @@ func badPanic(panicked, panicExpected bool) []string {
 }
 
 // showPanicMsgs reports the problems found with the panic
-func showPanicMsgs(t *testing.T, panicked bool, pv interface{}, msgs []string) {
+func showPanicMsgs(t *testing.T, panicked bool, pv any, msgs []string) {
 	t.Helper()
 	if len(msgs) > 0 {
 		if panicked {
