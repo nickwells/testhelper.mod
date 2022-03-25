@@ -67,7 +67,7 @@ func DiffInt[T constraints.Integer](t *testing.T, id, name string,
 }
 
 // reportStringDiff reports the difference between two strings
-func reportStringDiff(t *testing.T, name, act, exp string) {
+func reportStringDiff[S ~string](t *testing.T, name string, act, exp S) {
 	t.Helper()
 	t.Logf("\t: expected %s (length: %4d): %q\n", name, len(exp), exp)
 	t.Logf("\t:   actual %s (length: %4d): %q\n", name, len(act), act)
@@ -76,7 +76,7 @@ func reportStringDiff(t *testing.T, name, act, exp string) {
 
 // DiffString compares the actual against the expected value and reports an
 // error if they differ
-func DiffString(t *testing.T, id, name, act, exp string) bool {
+func DiffString[S ~string](t *testing.T, id, name string, act, exp S) bool {
 	t.Helper()
 	if act != exp {
 		t.Log(id)
