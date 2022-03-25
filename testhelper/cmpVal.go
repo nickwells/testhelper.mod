@@ -18,14 +18,6 @@ func almostEqual(a, b, epsilon float64) bool {
 	return math.Abs(a-b) < epsilon
 }
 
-// CmpValFloat64
-//
-// Deprecated: use DiffFloat64
-func CmpValFloat64(t *testing.T, id, name string, act, exp, epsilon float64) {
-	t.Helper()
-	DiffFloat64(t, id, name, act, exp, epsilon)
-}
-
 // reportFloatDiff reports the difference between two float values
 func reportFloatDiff(t *testing.T, name string, act, exp float64) {
 	t.Helper()
@@ -49,27 +41,11 @@ func DiffFloat64(t *testing.T, id, name string, act, exp, epsilon float64) bool 
 	return false
 }
 
-// CmpValFloat32
-//
-// Deprecated: use DiffFloat32
-func CmpValFloat32(t *testing.T, id, name string, act, exp, epsilon float32) {
-	t.Helper()
-	DiffFloat32(t, id, name, act, exp, epsilon)
-}
-
 // DiffFloat32 compares the actual against the expected value and reports
 // an error if they differ by more than epsilon
 func DiffFloat32(t *testing.T, id, name string, act, exp, epsilon float32) bool {
 	t.Helper()
 	return DiffFloat64(t, id, name, float64(act), float64(exp), float64(epsilon))
-}
-
-// CmpValInt64
-//
-// Deprecated: use DiffInt64
-func CmpValInt64(t *testing.T, id, name string, act, exp int64) {
-	t.Helper()
-	DiffInt64(t, id, name, act, exp)
 }
 
 // DiffInt64 compares the actual against the expected value and reports an
@@ -89,14 +65,6 @@ func DiffInt64(t *testing.T, id, name string, act, exp int64) bool {
 	return false
 }
 
-// CmpValInt32
-//
-// Deprecated: use DiffInt32
-func CmpValInt32(t *testing.T, id, name string, act, exp int32) {
-	t.Helper()
-	DiffInt32(t, id, name, act, exp)
-}
-
 // DiffInt32 compares the actual against the expected value and reports an
 // error if they differ
 func DiffInt32(t *testing.T, id, name string, act, exp int32) bool {
@@ -104,27 +72,11 @@ func DiffInt32(t *testing.T, id, name string, act, exp int32) bool {
 	return DiffInt64(t, id, name, int64(act), int64(exp))
 }
 
-// CmpValInt
-//
-// Deprecated: use DiffInt
-func CmpValInt(t *testing.T, id, name string, act, exp int) {
-	t.Helper()
-	DiffInt(t, id, name, act, exp)
-}
-
 // DiffInt compares the actual against the expected value and reports an
 // error if they differ
 func DiffInt(t *testing.T, id, name string, act, exp int) bool {
 	t.Helper()
 	return DiffInt64(t, id, name, int64(act), int64(exp))
-}
-
-// CmpValUint64
-//
-// Deprecated: use DiffUint64
-func CmpValUint64(t *testing.T, id, name string, act, exp uint64) {
-	t.Helper()
-	DiffUint64(t, id, name, act, exp)
 }
 
 // DiffUint64 compares the actual against the expected value and reports an
@@ -141,14 +93,6 @@ func DiffUint64(t *testing.T, id, name string, act, exp uint64) bool {
 	return false
 }
 
-// CmpValUint32
-//
-// Deprecated: use DiffUint32
-func CmpValUint32(t *testing.T, id, name string, act, exp uint32) {
-	t.Helper()
-	DiffUint32(t, id, name, act, exp)
-}
-
 // DiffUint32 compares the actual against the expected value and reports an
 // error if they differ
 func DiffUint32(t *testing.T, id, name string, act, exp uint32) bool {
@@ -156,27 +100,11 @@ func DiffUint32(t *testing.T, id, name string, act, exp uint32) bool {
 	return DiffUint64(t, id, name, uint64(act), uint64(exp))
 }
 
-// CmpValUint
-//
-// Deprecated: use DiffUint
-func CmpValUint(t *testing.T, id, name string, act, exp uint) {
-	t.Helper()
-	DiffUint(t, id, name, act, exp)
-}
-
 // DiffUint compares the actual against the expected value and reports an
 // error if they differ
 func DiffUint(t *testing.T, id, name string, act, exp uint) bool {
 	t.Helper()
 	return DiffUint64(t, id, name, uint64(act), uint64(exp))
-}
-
-// CmpValString
-//
-// Deprecated: use DiffString
-func CmpValString(t *testing.T, id, name, act, exp string) {
-	t.Helper()
-	DiffString(t, id, name, act, exp)
 }
 
 // reportStringDiff reports the difference between two strings
@@ -230,14 +158,6 @@ func DiffStringer(t *testing.T, id, name string, actS, expS fmt.Stringer) bool {
 	}
 
 	return DiffString(t, id, name, actS.String(), expS.String())
-}
-
-// CmpValBool
-//
-// Deprecated: use DiffBool
-func CmpValBool(t *testing.T, id, name string, act, exp bool) {
-	t.Helper()
-	DiffBool(t, id, name, act, exp)
 }
 
 // DiffBool compares the actual against the expected value and reports an
