@@ -55,6 +55,12 @@ constructed ID string gives more information about where the test was
 constructed and several of the testhelper functions take a testhelper.ID (or
 an interface which it satisfies).
 
+The problem which the testhelper.ID solves is that reporting just the index
+number of a test (as in the previous example) imposes work on the
+tester such as counting tests to reach the failing test case. Using
+testhelper.ID gives you the filename and line number where the ID was
+instantiated.
+
 There are additional mixin structs beside ID which allow you to record such
 things as whether an error is expected and if so what the error string should
 contain.
