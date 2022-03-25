@@ -47,9 +47,11 @@ func DiffFloat[T constraints.Float](t *testing.T, id, name string,
 	return false
 }
 
-// DiffInt64 compares the actual against the expected value and reports an
+// DiffInt compares the actual against the expected value and reports an
 // error if they differ
-func DiffInt64(t *testing.T, id, name string, act, exp int64) bool {
+func DiffInt[T constraints.Integer](t *testing.T, id, name string,
+	act, exp T,
+) bool {
 	t.Helper()
 	if act != exp {
 		t.Log(id)
@@ -62,48 +64,6 @@ func DiffInt64(t *testing.T, id, name string, act, exp int64) bool {
 		return true
 	}
 	return false
-}
-
-// DiffInt32 compares the actual against the expected value and reports an
-// error if they differ
-func DiffInt32(t *testing.T, id, name string, act, exp int32) bool {
-	t.Helper()
-	return DiffInt64(t, id, name, int64(act), int64(exp))
-}
-
-// DiffInt compares the actual against the expected value and reports an
-// error if they differ
-func DiffInt(t *testing.T, id, name string, act, exp int) bool {
-	t.Helper()
-	return DiffInt64(t, id, name, int64(act), int64(exp))
-}
-
-// DiffUint64 compares the actual against the expected value and reports an
-// error if they differ
-func DiffUint64(t *testing.T, id, name string, act, exp uint64) bool {
-	t.Helper()
-	if act != exp {
-		t.Log(id)
-		t.Logf("\t: expected %s: %5d\n", name, exp)
-		t.Logf("\t:   actual %s: %5d\n", name, act)
-		t.Errorf("\t: %s is incorrect\n", name)
-		return true
-	}
-	return false
-}
-
-// DiffUint32 compares the actual against the expected value and reports an
-// error if they differ
-func DiffUint32(t *testing.T, id, name string, act, exp uint32) bool {
-	t.Helper()
-	return DiffUint64(t, id, name, uint64(act), uint64(exp))
-}
-
-// DiffUint compares the actual against the expected value and reports an
-// error if they differ
-func DiffUint(t *testing.T, id, name string, act, exp uint) bool {
-	t.Helper()
-	return DiffUint64(t, id, name, uint64(act), uint64(exp))
 }
 
 // reportStringDiff reports the difference between two strings
