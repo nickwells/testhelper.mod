@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	pBits    = 0644
-	dirPBits = 0755
+	pBits    = 0o644
+	dirPBits = 0o755
 )
 
 // AddUpdateFlag adds a new flag to the standard flag package. The flag is

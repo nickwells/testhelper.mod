@@ -8,8 +8,10 @@ import (
 )
 
 func TestMakeTempDir(t *testing.T) {
-	const tempDir = "testdata/temp.dir"
-	const perms = os.FileMode(0555)
+	const (
+		tempDir = "testdata/temp.dir"
+		perms   = os.FileMode(0o555)
+	)
 
 	var cleanup func()
 	panicked, panicVal := testhelper.PanicSafe(func() {
@@ -55,8 +57,10 @@ func TestMakeTempDir(t *testing.T) {
 }
 
 func TestTempChmod(t *testing.T) {
-	const fName = "testdata/file"
-	const permMask = os.FileMode(0555)
+	const (
+		fName    = "testdata/file"
+		permMask = os.FileMode(0o555)
+	)
 
 	fi, err := os.Stat(fName)
 	if err != nil {
