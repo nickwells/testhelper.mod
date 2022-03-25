@@ -209,9 +209,9 @@ func reportSliceLenDiff(t *testing.T, id, name string, act, exp int) bool {
 	return false
 }
 
-// DiffInt64Slice compares the actual against the expected value and reports
+// DiffSlice compares the actual against the expected value and reports
 // an error if they differ. At most MaxReportedDiffs are reported.
-func DiffInt64Slice(t *testing.T, id, name string, act, exp []int64) bool {
+func DiffSlice[C comparable](t *testing.T, id, name string, act, exp []C) bool {
 	t.Helper()
 	if reportSliceLenDiff(t, id, name, len(act), len(exp)) {
 		return true
@@ -228,8 +228,8 @@ func DiffInt64Slice(t *testing.T, id, name string, act, exp []int64) bool {
 			if diffCount == 1 {
 				t.Log(id)
 			}
-			t.Logf("\t: expected %s [%d]: %d\n", name, i, exp[i])
-			t.Logf("\t:   actual %s [%d]: %d\n", name, i, v)
+			t.Logf("\t: expected %s [%d]: %v\n", name, i, exp[i])
+			t.Logf("\t:   actual %s [%d]: %v\n", name, i, v)
 		}
 	}
 	reportDiffCount(t, name, diffCount)
@@ -239,7 +239,9 @@ func DiffInt64Slice(t *testing.T, id, name string, act, exp []int64) bool {
 
 // DiffFloat64Slice compares the actual against the expected value and reports
 // an error if they differ. At most MaxReportedDiffs are reported.
-func DiffFloat64Slice(t *testing.T, id, name string, act, exp []float64, epsilon float64) bool {
+func DiffFloatSlice[F constraints.Float](t *testing.T, id, name string,
+	act, exp []F, epsilon F,
+) bool {
 	t.Helper()
 	if reportSliceLenDiff(t, id, name, len(act), len(exp)) {
 		return true
@@ -266,7 +268,9 @@ func DiffFloat64Slice(t *testing.T, id, name string, act, exp []float64, epsilon
 
 // DiffStringSlice compares the actual against the expected value and reports
 // an error if they differ. At most MaxReportedDiffs are reported.
-func DiffStringSlice(t *testing.T, id, name string, act, exp []string) bool {
+func DiffStringSlice[S ~string](t *testing.T, id, name string,
+	act, exp []S,
+) bool {
 	t.Helper()
 	if reportSliceLenDiff(t, id, name, len(act), len(exp)) {
 		return true
