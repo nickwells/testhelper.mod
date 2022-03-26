@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/nickwells/testhelper.mod/testhelper"
+	"github.com/nickwells/testhelper.mod/v2/testhelper"
 )
 
 func TestMakeTempDir(t *testing.T) {

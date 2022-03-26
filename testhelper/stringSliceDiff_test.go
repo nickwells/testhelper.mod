@@ -3,7 +3,7 @@ package testhelper_test
 import (
 	"testing"
 
-	"github.com/nickwells/testhelper.mod/testhelper"
+	"github.com/nickwells/testhelper.mod/v2/testhelper"
 )
 
 func TestStringSliceDiff(t *testing.T) {
