@@ -1,4 +1,4 @@
-module github.com/nickwells/testhelper.mod
+module github.com/nickwells/testhelper.mod/v2
 
 go 1.18
 
