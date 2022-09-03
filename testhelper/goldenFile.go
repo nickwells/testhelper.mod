@@ -77,24 +77,24 @@ func (gfc *GoldenFileCfg) AddKeepBadResultsFlag() {
 // that can be compared as part of a test. It avoids the need to have a long
 // string in the body of a test.
 //
-//    DirNames is a slice of strings holding the parts of the directory path
-//    to the file
+//	DirNames is a slice of strings holding the parts of the directory path
+//	to the file
 //
-//    Pfx is an optional prefix - leave it as an empty string to exclude it
+//	Pfx is an optional prefix - leave it as an empty string to exclude it
 //
-//    Sfx is an optional suffix - as for the prefix
+//	Sfx is an optional suffix - as for the prefix
 //
-//    UpdFlagName is the name of a flag that will set a bool used to decide
-//    whether or not to update the golden file. If it is not set then it is
-//    ignored. If you have set this then you should also call the AddUpdateFlag
-//    method (typically in an init() function) and then use the Check method
-//    to compare with the file
+//	UpdFlagName is the name of a flag that will set a bool used to decide
+//	whether or not to update the golden file. If it is not set then it is
+//	ignored. If you have set this then you should also call the AddUpdateFlag
+//	method (typically in an init() function) and then use the Check method
+//	to compare with the file
 //
-//    KeepBadResultsFlagName is the name of a flag that will set a bool used
-//    to decide whether or not to keep bad results. If it is not set then it
-//    is ignored. If you have set this then you should also call the
-//    AddKeepBadResultsFlag method (typically in an init() function) and then
-//    use the Check method to compare with the file
+//	KeepBadResultsFlagName is the name of a flag that will set a bool used
+//	to decide whether or not to keep bad results. If it is not set then it
+//	is ignored. If you have set this then you should also call the
+//	AddKeepBadResultsFlag method (typically in an init() function) and then
+//	use the Check method to compare with the file
 type GoldenFileCfg struct {
 	DirNames []string
 	Pfx      string
@@ -121,24 +121,24 @@ type GoldenFileCfg struct {
 // through a command-line parameter to the test and then pass that to this
 // function as follows:
 //
-//    gfc := testhelper.GoldenFileCfg{
-//        DirNames:    []string{"testdata"},
-//        Pfx:         "values",
-//        Sfx:         "txt",
-//        UpdFlagName: "upd-gf",
-//    }
+//	gfc := testhelper.GoldenFileCfg{
+//	    DirNames:    []string{"testdata"},
+//	    Pfx:         "values",
+//	    Sfx:         "txt",
+//	    UpdFlagName: "upd-gf",
+//	}
 //
-//    func init() {
-//        gfc.AddUpdateFlag()
-//    }
-//    ...
-//    gfc.Check(t, "my value test", t.Name(), val)
+//	func init() {
+//	    gfc.AddUpdateFlag()
+//	}
+//	...
+//	gfc.Check(t, "my value test", t.Name(), val)
 //
-// Then to update the golden files you would invoke the test command as follows
+// Then to update the golden files you would invoke the test command as follows:
 //
-//    go test -upd-gf
+//	go test -upd-gf
 //
-// Similarly with the KeepBadResultsFlag
+// Similarly with the KeepBadResultsFlag.
 //
 // Give the -v argument to go test to see what is being updated.
 //
@@ -204,24 +204,24 @@ func (gfc GoldenFileCfg) PathName(name string) string {
 // value through a command-line parameter to the test and then pass that to
 // this function as follows
 //
-//    var upd = flag.Bool("upd-gf", false, "update the golden files")
-//    gfc := testhelper.GoldenFileCfg{
-//        DirNames: []string{"testdata"},
-//        Pfx:      "values",
-//        Sfx:      "txt",
-//    }
-//    ...
-//    testhelper.CheckAgainstGoldenFile(t,
-//        "my value test",
-//        val,
-//        gfc.PathName(t.Name()),
-//        *upd)
+//	var upd = flag.Bool("upd-gf", false, "update the golden files")
+//	gfc := testhelper.GoldenFileCfg{
+//	    DirNames: []string{"testdata"},
+//	    Pfx:      "values",
+//	    Sfx:      "txt",
+//	}
+//	...
+//	testhelper.CheckAgainstGoldenFile(t,
+//	    "my value test",
+//	    val,
+//	    gfc.PathName(t.Name()),
+//	    *upd)
 //
 // Then to update the golden files you would invoke the test command as follows
 //
-//    go test -upd-gf
+//	go test -upd-gf
 //
-// Give the -v argument to go test to see what is being updated
+// Give the -v argument to go test to see what is being updated.
 //
 // Deprecated: use the Check method on the GoldenFileCfg
 func CheckAgainstGoldenFile(t *testing.T, testID string, val []byte, gfName string, updGF bool) bool {
