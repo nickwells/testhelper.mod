@@ -19,7 +19,7 @@ func ExampleID_IDStr() {
 	}
 
 	for _, tc := range testCases {
-		if tc.v1 != tc.v2 {
+		if tc.v1 != tc.v2 { // You could use the testhelper.DiffInt(...) func
 			fmt.Println(tc.IDStr()) // in a real test this will be t.Error(...)
 		}
 	}
@@ -44,23 +44,24 @@ func ExampleExpErr() {
 		},
 	}
 
-	for range testCases { // for _, tc := range testCases {
-		//
-		// we can then run the test, collect any error returned and check
-		// that it is as expected. With the ExpErr member left at its default
-		// value no error is expecteed. If it has a value the error is
-		// expected and it should contain all the supplied strings.
-		//
-		// With the testcase structure having an ID and an ExpErr you can
-		// call
-		//
-		//     testhelper.CheckExpErr(t, err, tc)
-		//
-		// just passing the testing.T pointer (t), the error (err) and the
-		// testcase (tc). This will report any missing or unexpected errors
-		// or errors that have unexpected values. It wil return false if
-		// there are any problems
-	}
+	_ = testCases // this is just to ensure that the testCases var is used
+	// for _, tc := range testCases {
+	//
+	// we can then run the test, collect any error returned and check
+	// that it is as expected. With the ExpErr member left at its default
+	// value no error is expecteed. If it has a value the error is
+	// expected and it should contain all the supplied strings.
+	//
+	// With the testcase structure having an ID and an ExpErr you can
+	// call
+	//
+	//     testhelper.CheckExpErr(t, err, tc)
+	//
+	// just passing the testing.T pointer (t), the error (err) and the
+	// testcase (tc). This will report any missing or unexpected errors
+	// or errors that have unexpected values. It wil return false if
+	// there are any problems
+	// }
 }
 
 func ExampleExpPanic() {
@@ -80,31 +81,31 @@ func ExampleExpPanic() {
 		},
 	}
 
-	for range testCases { // for _, tc := range testCases {
-		//
-		// to test panics we will need to write a helper function taking the
-		// testcase values that parameterise the test. This should call our
-		// code to be tested and recover from any panics. This should then
-		// return true if a panic was seen and an interface value containing
-		// the panic value. We then collect these returned values and check
-		// that they are as expected. With the ExpPanic member left at its
-		// default value no panic is expecteed. If it has a value the panic
-		// is expected and it should contain all the supplied strings.
-		//
-		// With the testcase structure having an ID and an ExpPanic you can
-		// call
-		//
-		//     testhelper.CheckExpPanic(t, panicked, panicVal, tc)
-		//
-		// just passing the testing.T pointer (t), the boolean indicating
-		// whether a panic was seen , the panic value and the testcase
-		// (tc). This will report any missing or unexpected panics or panics
-		// that have unexpected values. It wil return true if there are any
-		// problems. There is an alternative function that can be called
-		// which allows you to pass a stack trace as a final parameter; this
-		// is useful if you get an unexpected panic and want to find out
-		// where it came from
-	}
+	_ = testCases // this is just to ensure that the testCases var is used
+	// for _, tc := range testCases {
+	// Use the testhelper.PanicSafe func
+	//
+	// This func calls the code to be tested and recovers from any panics.
+	// It returns true if a panic was seen and an interface value
+	// containing the panic value. We then collect these returned values
+	// and check that they are as expected. With the ExpPanic member left
+	// at its default value no panic is expecteed. If it has a value the
+	// panic is expected and it should contain all the supplied strings.
+	//
+	// With the testcase structure having an ID and an ExpPanic you can
+	// call
+	//
+	//     testhelper.CheckExpPanic(t, panicked, panicVal, tc)
+	//
+	// just passing the testing.T pointer (t), the boolean indicating
+	// whether a panic was seen , the panic value and the testcase
+	// (tc). This will report any missing or unexpected panics or panics
+	// that have unexpected values. It wil return true if there are any
+	// problems. There is an alternative function that can be called
+	// which allows you to pass a stack trace as a final parameter; this
+	// is useful if you get an unexpected panic and want to find out
+	// where it came from
+	// }
 }
 
 // ExamplePanicSafe demonstrates how the PanicSafe function may be used
