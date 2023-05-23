@@ -66,11 +66,30 @@ func DiffInt[T constraints.Integer](t *testing.T, id, name string,
 	return false
 }
 
+// stringFirstDiff returns the index of the first differing rune between act
+// and exp.
+func stringFirstDiff[S ~string](act, exp S) int {
+	actRunes := []rune(act)
+	expRunes := []rune(exp)
+
+	for i, r := range actRunes {
+		if i >= len(expRunes) {
+			return i
+		}
+		if r != expRunes[i] {
+			return i
+		}
+	}
+	return len(actRunes)
+}
+
 // reportStringDiff reports the difference between two strings
 func reportStringDiff[S ~string](t *testing.T, name string, act, exp S) {
 	t.Helper()
+
 	t.Logf("\t: expected %s (length: %4d): %q\n", name, len(exp), exp)
 	t.Logf("\t:   actual %s (length: %4d): %q\n", name, len(act), act)
+	t.Logf("\t: first difference at rune %d\n", stringFirstDiff(act, exp))
 	t.Errorf("\t: %s is incorrect\n", name)
 }
 
