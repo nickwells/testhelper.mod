@@ -272,13 +272,15 @@ func diffValsMap(actVal, expVal reflect.Value, dl deepLoc) error {
 		}
 	}
 
-	for i := 0; i < aLen; i++ {
+	for i := range aLen {
 		k := aMapKeys[i]
+
 		err := diffVals(actVal.MapIndex(k), expVal.MapIndex(k), addKey(dl, k))
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -288,14 +290,15 @@ func diffValsStruct(actVal, expVal reflect.Value, dl deepLoc) error {
 	// of fields as their types are the same
 	fields := actVal.NumField()
 
-	for i := 0; i < fields; i++ {
-		fieldName := actVal.Type().Field(i).Name
-		err := diffVals(actVal.Field(i), expVal.Field(i),
-			addName(dl, fieldName))
+	for i := range fields {
+		fldName := actVal.Type().Field(i).Name
+
+		err := diffVals(actVal.Field(i), expVal.Field(i), addName(dl, fldName))
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -312,12 +315,13 @@ func diffValsSlice(actVal, expVal reflect.Value, dl deepLoc) error {
 		}
 	}
 
-	for i := 0; i < aLen; i++ {
+	for i := range aLen {
 		err := diffVals(actVal.Index(i), expVal.Index(i), addIdx(dl, i))
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -327,12 +331,13 @@ func diffValsArray(actVal, expVal reflect.Value, dl deepLoc) error {
 	// as their types are the same
 	aLen := actVal.Len()
 
-	for i := 0; i < aLen; i++ {
+	for i := range aLen {
 		err := diffVals(actVal.Index(i), expVal.Index(i), addIdx(dl, i))
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
