@@ -22,19 +22,24 @@ func ShouldContain(t *testing.T, testID, desc, act string, exp []string) bool {
 		for _, part := range missing {
 			t.Log("\t\t" + part)
 		}
+
 		t.Error("\t: Parts of the string were missing")
+
 		return true
 	}
+
 	return false
 }
 
 // missingParts returns the entries in exp which are not in act
 func missingParts(act string, exp []string) []string {
 	missing := []string{}
+
 	for _, part := range exp {
 		if !strings.Contains(act, part) {
 			missing = append(missing, part)
 		}
 	}
+
 	return missing
 }

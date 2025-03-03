@@ -23,12 +23,15 @@ type EnvCache struct {
 func (ec *EnvCache) Setenv(entries ...EnvEntry) error {
 	for _, ee := range entries {
 		val := os.Getenv(ee.Key)
+
 		err := os.Setenv(ee.Key, ee.Value)
 		if err != nil {
 			return err
 		}
+
 		ec.Stack = append(ec.Stack, EnvEntry{Key: ee.Key, Value: val})
 	}
+
 	return nil
 }
 
@@ -41,5 +44,6 @@ func (ec *EnvCache) ResetEnv() {
 	for i := len(ec.Stack) - 1; i >= 0; i-- {
 		os.Setenv(ec.Stack[i].Key, ec.Stack[i].Value)
 	}
+
 	ec.Stack = ec.Stack[:0]
 }

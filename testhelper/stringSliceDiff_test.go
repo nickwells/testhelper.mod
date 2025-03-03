@@ -59,12 +59,12 @@ func TestStringSliceDiff(t *testing.T) {
 	for _, tc := range testCases {
 		differs := testhelper.StringSliceDiff(tc.s1, tc.s2)
 		if differs && !tc.expDiff {
-			t.Logf(tc.IDStr())
+			t.Log(tc.IDStr())
 			t.Logf("\t: %v\n", tc.s1)
 			t.Logf("\t: %v\n", tc.s2)
 			t.Errorf("\t: should not be reported as differing\n")
 		} else if !differs && tc.expDiff {
-			t.Logf(tc.IDStr())
+			t.Log(tc.IDStr())
 			t.Logf("\t: %v\n", tc.s1)
 			t.Logf("\t: %v\n", tc.s2)
 			t.Errorf("\t: should be reported as differing\n")

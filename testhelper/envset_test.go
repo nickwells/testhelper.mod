@@ -17,6 +17,7 @@ func makeEnvMap(env []string) map[string]string {
 		k, v, _ := strings.Cut(e, "=")
 		envMap[k] = v
 	}
+
 	return envMap
 }
 
@@ -27,6 +28,7 @@ func checkEnv(initenv []string, entries []testhelper.EnvEntry) error {
 	for _, ee := range entries {
 		expEnv[ee.Key] = ee.Value
 	}
+
 	crntEnv := makeEnvMap(os.Environ())
 
 	for k, v := range expEnv {
@@ -115,6 +117,7 @@ func TestEnvCache(t *testing.T) {
 
 	for _, tc := range testCases {
 		var ec testhelper.EnvCache
+
 		initenv := os.Environ()
 
 		for _, ee := range tc.initEnv {
@@ -125,14 +128,17 @@ func TestEnvCache(t *testing.T) {
 					ee.Key, ee.Value, err)
 			}
 		}
+
 		if err := checkEnv(initenv, tc.initEnv); err != nil {
 			t.Log(tc.IDStr())
 			t.Fatalf("Couldn't set the initial environment: %s", err)
 		}
+
 		initenv = os.Environ()
 
 		err := ec.Setenv(tc.newEnv...)
 		testhelper.CheckExpErr(t, err, tc)
+
 		if err != nil {
 			continue
 		}
@@ -140,6 +146,7 @@ func TestEnvCache(t *testing.T) {
 		if err := checkEnv(initenv, tc.expEnv); err != nil {
 			t.Log(tc.IDStr())
 			t.Errorf("EnvCache.Setenv failed: %s", err)
+
 			continue
 		}
 

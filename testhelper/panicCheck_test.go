@@ -65,21 +65,25 @@ func TestBadPanicString(t *testing.T) {
 
 	for _, tc := range testCases {
 		var panicIsBad bool
+
 		msgs := badPanicString(tc.panicked, tc.ExpPanic.Expected,
 			tc.panicVal, tc.ExpPanic.ShouldContain)
 		if len(msgs) > 0 {
 			panicIsBad = true
 		}
+
 		if panicIsBad && !tc.expBad {
-			t.Logf(tc.IDStr())
-			t.Logf("\t: badPanic message:\n")
+			t.Log(tc.IDStr())
+			t.Log("\t: badPanic message:\n")
+
 			for _, msg := range msgs {
 				t.Log("\t\t", msg, "\n")
 			}
-			t.Errorf("\t: the panic was unexpectedly reported as bad\n")
+
+			t.Error("\t: the panic was unexpectedly reported as bad\n")
 		} else if !panicIsBad && tc.expBad {
-			t.Logf(tc.IDStr())
-			t.Errorf(
+			t.Log(tc.IDStr())
+			t.Error(
 				"\t: the panic was expected to be reported as bad but wasn't\n")
 		} else if panicIsBad && tc.expBad {
 			DiffStringSlice(t, tc.IDStr(), "panic value", msgs, tc.expMsgs)
@@ -147,21 +151,25 @@ func TestBadPanicError(t *testing.T) {
 
 	for _, tc := range testCases {
 		var panicIsBad bool
+
 		msgs := badPanicError(tc.panicked, tc.ExpPanic.Expected,
 			tc.panicVal, tc.ExpPanic.ShouldContain)
 		if len(msgs) > 0 {
 			panicIsBad = true
 		}
+
 		if panicIsBad && !tc.expBad {
-			t.Logf(tc.IDStr())
-			t.Logf("\t: badPanic message:\n")
+			t.Log(tc.IDStr())
+			t.Log("\t: badPanic message:\n")
+
 			for _, msg := range msgs {
 				t.Log("\t\t", msg, "\n")
 			}
-			t.Errorf("\t: the panic was unexpectedly reported as bad\n")
+
+			t.Error("\t: the panic was unexpectedly reported as bad\n")
 		} else if !panicIsBad && tc.expBad {
-			t.Logf(tc.IDStr())
-			t.Errorf(
+			t.Log(tc.IDStr())
+			t.Error(
 				"\t: the panic was expected to be reported as bad but wasn't\n")
 		} else if panicIsBad && tc.expBad {
 			DiffStringSlice(t, tc.IDStr(), "panic value", msgs, tc.expMsgs)

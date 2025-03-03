@@ -49,17 +49,21 @@ func TestDiffVals(t *testing.T) {
 
 	loopyMap := make(map[string]any)
 	loopyMap["loop"] = loopyMap
+
 	var nilMap map[string]any
 
 	var loopyArray1 [3]any
 	loopyArray1[0] = &loopyArray1
+
 	var loopyArray2 [3]any
 	loopyArray2[0] = &loopyArray2
 
 	loopySlice1 := make([]any, 0)
 	loopySlice1 = append(loopySlice1, &loopySlice1)
+
 	loopySlice2 := make([]any, 0)
 	loopySlice2 = append(loopySlice2, &loopySlice2)
+
 	var nilSlice []any
 
 	msl1 := myStructLoopy{i: 42, f: 3.14159}

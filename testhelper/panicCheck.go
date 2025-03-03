@@ -137,6 +137,7 @@ func PanicCheckString(t *testing.T, testID string,
 		t.Log(testID)
 		showPanicMsgs(t, panicked, panicVal, msgs)
 	}
+
 	return len(msgs) > 0
 }
 
@@ -152,11 +153,14 @@ func PanicCheckStringWithStack(t *testing.T, testID string,
 	msgs := badPanicString(panicked, panicExpected, panicVal, shouldContain)
 	if len(msgs) > 0 {
 		t.Log(testID)
+
 		if panicked {
 			t.Log(string(stackTrace))
 		}
+
 		showPanicMsgs(t, panicked, panicVal, msgs)
 	}
+
 	return len(msgs) > 0
 }
 
@@ -174,6 +178,7 @@ func PanicCheckError(t *testing.T, testID string,
 		t.Log(testID)
 		showPanicMsgs(t, panicked, panicVal, msgs)
 	}
+
 	return len(msgs) > 0
 }
 
@@ -189,11 +194,14 @@ func PanicCheckErrorWithStack(t *testing.T, testID string,
 	msgs := badPanicError(panicked, panicExpected, panicVal, shouldContain)
 	if len(msgs) > 0 {
 		t.Log(testID)
+
 		if panicked {
 			t.Log(string(stackTrace))
 		}
+
 		showPanicMsgs(t, panicked, panicVal, msgs)
 	}
+
 	return len(msgs) > 0
 }
 
@@ -250,6 +258,7 @@ func badPanicError(panicked, panicExpected bool,
 			fmt.Sprintf("a panic was seen but was not an error: %T", panicVal),
 		}
 	}
+
 	pvStr := pvErr.Error()
 
 	return badPanicVal(pvStr, shouldContain)
@@ -262,6 +271,7 @@ func badPanicVal(act string, exp []string) []string {
 		rval := []string{"the panic message should contain:"}
 		return append(rval, missing...)
 	}
+
 	return nil
 }
 
@@ -278,22 +288,27 @@ func badPanic(panicked, panicExpected bool) []string {
 	if !panicked && panicExpected {
 		return []string{"a panic was expected but not seen"}
 	}
+
 	return []string{"badPanic has been called unexpectedly"}
 }
 
 // showPanicMsgs reports the problems found with the panic
 func showPanicMsgs(t *testing.T, panicked bool, pv any, msgs []string) {
 	t.Helper()
+
 	if len(msgs) > 0 {
 		if panicked {
 			t.Log("\t: Panic value:")
 			t.Logf("\t\t%v", pv)
 		}
+
 		intro := "\t: "
+
 		for _, msg := range msgs {
 			t.Log(intro + msg)
 			intro = "\t\t"
 		}
+
 		t.Error("\t: Bad Panic")
 	}
 }

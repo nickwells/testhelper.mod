@@ -13,5 +13,6 @@ func StringSliceDiff(a, b []string) bool {
 			return true
 		}
 	}
+
 	return false
 }

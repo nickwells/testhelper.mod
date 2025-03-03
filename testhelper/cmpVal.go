@@ -39,11 +39,14 @@ func DiffFloat[T constraints.Float](t *testing.T, id, name string,
 	act, exp, epsilon T,
 ) bool {
 	t.Helper()
+
 	if !almostEqual(act, exp, epsilon) {
 		t.Log(id)
 		reportFloatDiff(t, name, act, exp)
+
 		return true
 	}
+
 	return false
 }
 
@@ -53,6 +56,7 @@ func DiffInt[T constraints.Integer](t *testing.T, id, name string,
 	act, exp T,
 ) bool {
 	t.Helper()
+
 	if act != exp {
 		t.Log(id)
 		t.Logf("\t: expected %s: %5d\n", name, exp)
@@ -61,8 +65,10 @@ func DiffInt[T constraints.Integer](t *testing.T, id, name string,
 		t.Logf("\t: %*s: %5d\n", charCnt, "diff",
 			int64(math.Abs(float64(act-exp))))
 		t.Errorf("\t: %s is incorrect\n", name)
+
 		return true
 	}
+
 	return false
 }
 
@@ -76,10 +82,12 @@ func stringFirstDiff[S ~string](act, exp S) int {
 		if i >= len(expRunes) {
 			return i
 		}
+
 		if r != expRunes[i] {
 			return i
 		}
 	}
+
 	return len(actRunes)
 }
 
@@ -97,11 +105,14 @@ func reportStringDiff[S ~string](t *testing.T, name string, act, exp S) {
 // error if they differ
 func DiffString[S ~string](t *testing.T, id, name string, act, exp S) bool {
 	t.Helper()
+
 	if act != exp {
 		t.Log(id)
 		reportStringDiff(t, name, act, exp)
+
 		return true
 	}
+
 	return false
 }
 
@@ -124,6 +135,7 @@ func DiffStringer(t *testing.T, id, name string, actS, expS fmt.Stringer) bool {
 		t.Logf("\t: expected %s is non-nil\n", name)
 		t.Logf("\t:   actual %s is nil\n", name)
 		t.Errorf("\t: %s is incorrect\n", name)
+
 		return true
 	}
 
@@ -132,6 +144,7 @@ func DiffStringer(t *testing.T, id, name string, actS, expS fmt.Stringer) bool {
 		t.Logf("\t: expected %s is nil\n", name)
 		t.Logf("\t:   actual %s is non-nil\n", name)
 		t.Errorf("\t: %s is incorrect\n", name)
+
 		return true
 	}
 
@@ -142,13 +155,16 @@ func DiffStringer(t *testing.T, id, name string, actS, expS fmt.Stringer) bool {
 // error if they differ
 func DiffBool(t *testing.T, id, name string, act, exp bool) bool {
 	t.Helper()
+
 	if act != exp {
 		t.Log(id)
 		t.Logf("\t: expected %s: %v\n", name, exp)
 		t.Logf("\t:   actual %s: %v\n", name, act)
 		t.Errorf("\t: %s is incorrect\n", name)
+
 		return true
 	}
+
 	return false
 }
 
@@ -156,14 +172,17 @@ func DiffBool(t *testing.T, id, name string, act, exp bool) bool {
 // error if they differ
 func DiffTime(t *testing.T, id, name string, act, exp time.Time) bool {
 	t.Helper()
+
 	if d := act.Sub(exp); d != 0 {
 		t.Log(id)
 		t.Logf("\t: expected %s: %v\n", name, exp)
 		t.Logf("\t:   actual %s: %v\n", name, act)
 		t.Logf("\t: difference: %v\n", d)
 		t.Errorf("\t: %s is incorrect\n", name)
+
 		return true
 	}
+
 	return false
 }
 
@@ -184,8 +203,10 @@ func DiffErr(t *testing.T, id, name string, act, exp error) bool {
 		t.Logf("\t: expected %s: %v\n", name, exp)
 		t.Logf("\t:   actual %s: %v\n", name, act)
 		t.Errorf("\t: %s is incorrect\n", name)
+
 		return true
 	}
+
 	return false
 }
 
@@ -194,11 +215,13 @@ const MaxReportedDiffs = 5
 // reportDiffCount reports the number of differences found
 func reportDiffCount(t *testing.T, name string, diffCount int) {
 	t.Helper()
+
 	if diffCount > 0 {
 		diffStr := "differences"
 		if diffCount == 1 {
 			diffStr = "difference"
 		}
+
 		t.Logf("\t: %d %s found\n", diffCount, diffStr)
 		t.Errorf("\t: %s is incorrect\n", name)
 	}
@@ -209,6 +232,7 @@ func reportDiffCount(t *testing.T, name string, diffCount int) {
 // elided difference.
 func reportMaxDiffsShown(t *testing.T, diffCount int) {
 	t.Helper()
+
 	if diffCount == (MaxReportedDiffs + 1) {
 		t.Log("\t: ...\n")
 	}
@@ -218,13 +242,16 @@ func reportMaxDiffsShown(t *testing.T, diffCount int) {
 // true if so and false otherwise.
 func reportSliceLenDiff(t *testing.T, id, name string, act, exp int) bool {
 	t.Helper()
+
 	if act != exp {
 		t.Log(id)
 		t.Logf("\t: expected %s length: %4d\n", name, exp)
 		t.Logf("\t:   actual %s length: %4d\n", name, act)
 		t.Errorf("\t: %s is incorrect\n", name)
+
 		return true
 	}
+
 	return false
 }
 
@@ -232,11 +259,13 @@ func reportSliceLenDiff(t *testing.T, id, name string, act, exp int) bool {
 // an error if they differ. At most MaxReportedDiffs are reported.
 func DiffSlice[C comparable](t *testing.T, id, name string, act, exp []C) bool {
 	t.Helper()
+
 	if reportSliceLenDiff(t, id, name, len(act), len(exp)) {
 		return true
 	}
 
 	diffCount := 0
+
 	for i, v := range act {
 		if v != exp[i] {
 			diffCount++
@@ -244,13 +273,16 @@ func DiffSlice[C comparable](t *testing.T, id, name string, act, exp []C) bool {
 				reportMaxDiffsShown(t, diffCount)
 				continue
 			}
+
 			if diffCount == 1 {
 				t.Log(id)
 			}
+
 			t.Logf("\t: expected %s [%d]: %v\n", name, i, exp[i])
 			t.Logf("\t:   actual %s [%d]: %v\n", name, i, v)
 		}
 	}
+
 	reportDiffCount(t, name, diffCount)
 
 	return diffCount > 0
@@ -262,11 +294,13 @@ func DiffFloatSlice[F constraints.Float](t *testing.T, id, name string,
 	act, exp []F, epsilon F,
 ) bool {
 	t.Helper()
+
 	if reportSliceLenDiff(t, id, name, len(act), len(exp)) {
 		return true
 	}
 
 	diffCount := 0
+
 	for i, v := range act {
 		if !almostEqual(v, exp[i], epsilon) {
 			diffCount++
@@ -274,12 +308,15 @@ func DiffFloatSlice[F constraints.Float](t *testing.T, id, name string,
 				reportMaxDiffsShown(t, diffCount)
 				continue
 			}
+
 			if diffCount == 1 {
 				t.Log(id)
 			}
+
 			reportFloatDiff(t, fmt.Sprintf("%s [%d]", name, i), v, exp[i])
 		}
 	}
+
 	reportDiffCount(t, name, diffCount)
 
 	return diffCount > 0
@@ -291,11 +328,13 @@ func DiffStringSlice[S ~string](t *testing.T, id, name string,
 	act, exp []S,
 ) bool {
 	t.Helper()
+
 	if reportSliceLenDiff(t, id, name, len(act), len(exp)) {
 		return true
 	}
 
 	diffCount := 0
+
 	for i, s := range act {
 		if s != exp[i] {
 			diffCount++
@@ -303,12 +342,16 @@ func DiffStringSlice[S ~string](t *testing.T, id, name string,
 				reportMaxDiffsShown(t, diffCount)
 				continue
 			}
+
 			if diffCount == 1 {
 				t.Log(id)
 			}
+
 			reportStringDiff(t, fmt.Sprintf("%s [%d]", name, i), s, exp[i])
 		}
 	}
+
 	reportDiffCount(t, name, diffCount)
+
 	return diffCount > 0
 }

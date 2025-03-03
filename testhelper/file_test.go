@@ -14,6 +14,7 @@ func TestMakeTempDir(t *testing.T) {
 	)
 
 	var cleanup func()
+
 	panicked, panicVal := testhelper.PanicSafe(func() {
 		cleanup = testhelper.MakeTempDir(tempDir, perms)
 	})
@@ -21,6 +22,7 @@ func TestMakeTempDir(t *testing.T) {
 		t.Fatalf("The MakeTempDir function panicked unexpectedly: %s",
 			panicVal)
 	}
+
 	fi, err := os.Stat(tempDir)
 	if err != nil {
 		t.Errorf("Couldn't stat the temp directory %q: %s", tempDir, err)
@@ -32,6 +34,7 @@ func TestMakeTempDir(t *testing.T) {
 		t.Logf("\t:   actual permissions: %o", fi.Mode()&os.ModePerm)
 		t.Errorf("\t: %q has the wrong permissions", tempDir)
 	}
+
 	panicked, panicVal = testhelper.PanicSafe(func() {
 		testhelper.MakeTempDir(tempDir, perms)
 	})
@@ -39,6 +42,7 @@ func TestMakeTempDir(t *testing.T) {
 		t.Error(
 			"The MakeTempDir function should have panicked - the dir exists")
 	}
+
 	err, ok := panicVal.(*os.PathError)
 	if !ok {
 		t.Errorf("Unexpected panic val when calling MakeTempDir twice: %s",
@@ -47,7 +51,9 @@ func TestMakeTempDir(t *testing.T) {
 		t.Errorf("Unexpected PathError when calling MakeTempDir twice: %s",
 			err)
 	}
+
 	cleanup()
+
 	_, err = os.Stat(tempDir)
 	if err == nil {
 		t.Errorf("The temp directory %q should not exist but does", tempDir)
@@ -71,6 +77,7 @@ func TestTempChmod(t *testing.T) {
 	targetPerms := originalPerms ^ permMask
 
 	var cleanup func()
+
 	panicked, panicVal := testhelper.PanicSafe(func() {
 		cleanup = testhelper.TempChmod(fName, targetPerms)
 	})
@@ -78,6 +85,7 @@ func TestTempChmod(t *testing.T) {
 		t.Fatalf("The TempChmod function panicked unexpectedly: %s",
 			panicVal)
 	}
+
 	fi, err = os.Stat(fName)
 	if err != nil {
 		t.Errorf("Couldn't stat the file %q: %s", fName, err)
@@ -87,7 +95,9 @@ func TestTempChmod(t *testing.T) {
 		t.Logf("\t:   actual permissions: %o", fi.Mode()&os.ModePerm)
 		t.Errorf("\t: %q has the wrong permissions", fName)
 	}
+
 	cleanup()
+
 	fi, err = os.Stat(fName)
 	if err != nil {
 		t.Errorf("The file %q should exist (post cleanup) but doesn't", fName)
@@ -108,6 +118,7 @@ func TestTempChmodNoFile(t *testing.T) {
 	if !panicked {
 		t.Fatalf("The TempChmod function was expected to panic but didn't")
 	}
+
 	err, ok := panicVal.(*os.PathError)
 	if !ok {
 		t.Errorf("Unexpected panic val when calling TempChmod"+

@@ -57,7 +57,9 @@ func (dl deepLoc) String() string {
 // panics if it's more than maxDepth
 func (dl *deepLoc) incr() {
 	const maxDepth = 1000
+
 	dl.depth++
+
 	if dl.depth > maxDepth {
 		panic(DiffValErr{dl: *dl, msg: "undetected loop"})
 	}
@@ -75,6 +77,7 @@ func (dl *deepLoc) isALoop(v visit) bool {
 	}
 
 	dl.loop[v] = true
+
 	return false
 }
 
@@ -108,17 +111,21 @@ func (dl deepLoc) skip() bool {
 		if len(sl) > len(dl.currentLoc) {
 			continue
 		}
+
 		skip := true
+
 		for i, s := range sl {
 			if s != dl.currentLoc[i] {
 				skip = false
 				break
 			}
 		}
+
 		if skip {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -142,6 +149,7 @@ func DiffVals(actVal, expVal any, ignore ...[]string) error {
 			msg: "the actual value is nil, the expected value is not",
 		}
 	}
+
 	if expVal == nil {
 		return DiffValErr{
 			dl:  dl,
@@ -180,6 +188,7 @@ func diffVals(actVal, expVal reflect.Value, dl deepLoc) error { //nolint:cyclop
 
 	actType := actVal.Type()
 	expType := expVal.Type()
+
 	if actType != expType {
 		return DiffValErr{
 			dl: dl,
@@ -215,6 +224,7 @@ func diffVals(actVal, expVal reflect.Value, dl deepLoc) error { //nolint:cyclop
 		if valsMustBeEqual(actVal.Pointer(), expVal.Pointer(), actType, dl) {
 			return nil
 		}
+
 		return diffValsSlice(actVal, expVal, dl)
 	case reflect.Func:
 		return diffValsFunc(actVal, expVal, dl)
@@ -228,11 +238,13 @@ func diffVals(actVal, expVal reflect.Value, dl deepLoc) error { //nolint:cyclop
 		if valsMustBeEqual(actVal.Pointer(), expVal.Pointer(), actType, dl) {
 			return nil
 		}
+
 		return diffVals(actVal.Elem(), expVal.Elem(), dl)
 	case reflect.Map:
 		if valsMustBeEqual(actVal.Pointer(), expVal.Pointer(), actType, dl) {
 			return nil
 		}
+
 		return diffValsMap(actVal, expVal, dl)
 	case reflect.Struct:
 		return diffValsStruct(actVal, expVal, dl)
@@ -250,6 +262,7 @@ func valsMustBeEqual(actPtr, expPtr uintptr, t reflect.Type, dl deepLoc) bool {
 	if actPtr == expPtr {
 		return true
 	}
+
 	if dl.isALoop(visit{actPtr, expPtr, t}) {
 		return true
 	}

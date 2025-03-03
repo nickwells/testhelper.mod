@@ -26,6 +26,7 @@ func MkID(name string) ID {
 		id.At = fmt.Sprintf("%s:%d", filepath.Base(file), line)
 		id.AtFullName = fmt.Sprintf("%s:%d", file, line)
 	}
+
 	return id
 }
 
@@ -34,6 +35,7 @@ func (id ID) IDStr() string {
 	if id.At == "" {
 		return "test: " + id.Name
 	}
+
 	return "test: " + id.At + ": " + id.Name
 }
 
@@ -46,6 +48,7 @@ func (id ID) IDStrFullName() string {
 	if id.AtFullName == "" {
 		return "test: " + id.Name
 	}
+
 	return "test: " + id.AtFullName + ": " + id.Name
 }
 

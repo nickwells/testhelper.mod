@@ -25,6 +25,7 @@ func MakeTempDir(name string, perms os.FileMode) func() {
 	err = os.Chmod(name, perms&os.ModePerm)
 	if err != nil {
 		_ = os.Remove(name)
+
 		panic(err)
 	}
 
@@ -65,6 +66,7 @@ func MakeTempDirCopy(fromDir string) (string, func() error, error) {
 	}
 
 	err = copyDirFromTo(fromDir, tmpDir)
+
 	return tmpDir, func() error { return os.RemoveAll(tmpDir) }, err
 }
 
@@ -89,10 +91,12 @@ func copyDirFromTo(from, to string) error {
 				newFromDir = filepath.Join(from, fi.Name())
 				newToDir   = filepath.Join(to, fi.Name())
 			)
+
 			err = os.Mkdir(newToDir, fi.Mode()&fs.ModePerm)
 			if err != nil {
 				return err
 			}
+
 			err = copyDirFromTo(newFromDir, newToDir)
 			if err != nil {
 				return err
@@ -102,10 +106,12 @@ func copyDirFromTo(from, to string) error {
 				fromFile = filepath.Join(from, fi.Name())
 				toFile   = filepath.Join(to, fi.Name())
 			)
+
 			fromBytes, err := os.ReadFile(fromFile)
 			if err != nil {
 				return err
 			}
+
 			err = os.WriteFile(toFile, fromBytes, fi.Mode()&fs.ModePerm)
 			if err != nil {
 				return err
@@ -116,5 +122,6 @@ func copyDirFromTo(from, to string) error {
 				fi.Name())
 		}
 	}
+
 	return nil
 }

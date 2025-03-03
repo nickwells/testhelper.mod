@@ -179,14 +179,18 @@ func (gfc GoldenFileCfg) Check(t *testing.T, id, gfName string, val []byte) bool
 // Note that any supplied name is "cleaned" by removing any part prior to an
 // embedded filepath.Separator.
 func (gfc GoldenFileCfg) PathName(name string) string {
-	fNameParts := make([]string, 0, 3)
+	fNameParts := make([]string, 0)
+
 	if gfc.Pfx != "" {
 		fNameParts = append(fNameParts, gfc.Pfx)
 	}
+
 	fNameParts = append(fNameParts, filepath.Base(name))
+
 	if gfc.Sfx != "" {
 		fNameParts = append(fNameParts, gfc.Sfx)
 	}
+
 	fName := strings.Join(fNameParts, ".")
 
 	pathParts := make([]string, 0, len(gfc.DirNames)+1)
@@ -224,7 +228,9 @@ func (gfc GoldenFileCfg) PathName(name string) string {
 // Give the -v argument to go test to see what is being updated.
 //
 // Deprecated: use the Check method on the GoldenFileCfg
-func CheckAgainstGoldenFile(t *testing.T, testID string, val []byte, gfName string, updGF bool) bool {
+func CheckAgainstGoldenFile(t *testing.T, testID string,
+	val []byte, gfName string, updGF bool,
+) bool {
 	t.Helper()
 
 	return checkFile(t, testID, gfName, val, updGF)
@@ -235,7 +241,8 @@ func CheckAgainstGoldenFile(t *testing.T, testID string, val []byte, gfName stri
 // the contents and true if all went well, nil and false otherwise. It will
 // report any errors it finds including any problems reading from or writing
 // to the golden file itself.
-func getExpVal(t *testing.T, id, gfName string, val []byte, updGF bool) ([]byte, bool) {
+func getExpVal(t *testing.T, id, gfName string, val []byte, updGF bool,
+) ([]byte, bool) {
 	t.Helper()
 
 	if updGF {
@@ -244,13 +251,15 @@ func getExpVal(t *testing.T, id, gfName string, val []byte, updGF bool) ([]byte,
 		}
 	}
 
-	expVal, err := os.ReadFile(gfName) // nolint: gosec
+	expVal, err := os.ReadFile(gfName)
 	if err != nil {
 		t.Log(id)
 		t.Logf("\t: Problem with the golden file: %q", gfName)
 		t.Errorf("\t: Couldn't read the expected value. Error: %s", err)
+
 		return nil, false
 	}
+
 	return expVal, true
 }
 
@@ -264,7 +273,7 @@ func checkFile(t *testing.T, id, gfName string, val []byte, updGF bool) bool {
 
 	expVal, ok := getExpVal(t, id, gfName, val, updGF)
 	if !ok {
-		t.Errorf("\t: Actual\n" + string(val))
+		t.Error("\t: Actual\n" + string(val))
 		return false
 	}
 
@@ -276,7 +285,8 @@ func checkFile(t *testing.T, id, gfName string, val []byte, updGF bool) bool {
 // errors it finds including any problems reading from or writing to the
 // golden file itself. If the updGF flag is set to true then the golden file
 // will be updated with the supplied value.
-func (gfc GoldenFileCfg) checkFile(t *testing.T, id, gfName string, val []byte) bool {
+func (gfc GoldenFileCfg) checkFile(t *testing.T, id, gfName string, val []byte,
+) bool {
 	t.Helper()
 
 	expVal, ok := getExpVal(t, id, gfName, val, gfc.updFlag)
@@ -285,7 +295,9 @@ func (gfc GoldenFileCfg) checkFile(t *testing.T, id, gfName string, val []byte) 
 			t.Errorf("\t: To update the golden file with the new value"+
 				" pass %q to the go test command", "-"+gfc.UpdFlagName)
 		}
-		t.Errorf("\t: Actual\n" + string(val))
+
+		t.Error("\t: Actual\n" + string(val))
+
 		return false
 	}
 
@@ -297,6 +309,7 @@ func (gfc GoldenFileCfg) checkFile(t *testing.T, id, gfName string, val []byte) 
 		t.Errorf("\t: To update the golden file with the new value"+
 			" pass %q to the go test command", "-"+gfc.UpdFlagName)
 	}
+
 	if gfc.keepBadResultsFlag {
 		keepBadResults(t, gfName, val)
 	} else if gfc.KeepBadResultsFlagName != "" {
@@ -304,6 +317,7 @@ func (gfc GoldenFileCfg) checkFile(t *testing.T, id, gfName string, val []byte) 
 			" investigation pass %q to the go test command",
 			"-"+gfc.KeepBadResultsFlagName)
 	}
+
 	return false
 }
 
@@ -321,6 +335,7 @@ func actEqualsExp(t *testing.T, id, gfName string, actVal, expVal []byte) bool {
 	t.Log("\t: Actual\n" + string(actVal))
 	t.Errorf("\t: The value given differs from the golden file value: %q",
 		gfName)
+
 	return false
 }
 
@@ -332,7 +347,7 @@ func actEqualsExp(t *testing.T, id, gfName string, actVal, expVal []byte) bool {
 func updateGoldenFile(t *testing.T, gfName string, val []byte) bool {
 	t.Helper()
 
-	origVal, err := os.ReadFile(gfName) // nolint: gosec
+	origVal, err := os.ReadFile(gfName)
 	if err == nil {
 		if bytes.Equal(val, origVal) {
 			return true
@@ -367,22 +382,27 @@ func writeFile(t *testing.T, fName, desc string, val []byte) (rval bool) {
 	t.Helper()
 
 	rval = true
+
 	var err error
+
 	defer func() {
 		if err != nil {
 			t.Logf("\t: Couldn't write to the %s file", desc)
 			t.Error("\t: ", err)
+
 			rval = false
 		}
 	}()
 
 	t.Logf("Updating/Creating the %s file: %q", desc, fName)
+
 	err = os.WriteFile(fName, val, pBits)
 	if os.IsNotExist(err) {
 		dir := path.Dir(fName)
 		if dir == "." {
 			return
 		}
+
 		err = os.MkdirAll(dir, dirPBits)
 		if err != nil {
 			return
@@ -390,5 +410,6 @@ func writeFile(t *testing.T, fName, desc string, val []byte) (rval bool) {
 
 		err = os.WriteFile(fName, val, pBits)
 	}
+
 	return
 }

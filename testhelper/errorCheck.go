@@ -74,6 +74,7 @@ func CheckError(t *testing.T, testID string, err error, expected bool, shouldCon
 			t.Log("\t: unexpected error:")
 			t.Logf("\t\t%s", err)
 			t.Errorf("\t: no error was expected")
+
 			return false
 		}
 
@@ -83,6 +84,7 @@ func CheckError(t *testing.T, testID string, err error, expected bool, shouldCon
 	if expected {
 		t.Log(testID)
 		t.Error("\t: an error was expected but none was returned")
+
 		return false
 	}
 

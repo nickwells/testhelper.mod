@@ -66,6 +66,7 @@ func reader(name string, r *os.File, byteCh chan []byte, errCh chan error) {
 		errCh <- fmt.Errorf("Error copying from %s: %w", name, err)
 	}
 	byteCh <- b.Bytes()
+
 	r.Close()
 	close(byteCh)
 	close(errCh)
@@ -77,6 +78,7 @@ func writer(name string, w *os.File, b []byte, errCh chan error) {
 	if _, err := w.Write(b); err != nil {
 		errCh <- fmt.Errorf("Error writing to %s: %w", name, err)
 	}
+
 	w.Close()
 	close(errCh)
 }
@@ -107,7 +109,9 @@ func NewStdioFromString(input string) (fio *FakeIO, err error) {
 		err = fmt.Errorf("Cannot create the stdin pipe: %w", err)
 		return
 	}
+
 	fio.stdinErrCh = make(chan error)
+
 	go writer("stdin", fio.stdinWriter, []byte(input), fio.stdinErrCh)
 
 	fio.stdoutReader, os.Stdout, err = os.Pipe()
@@ -115,8 +119,10 @@ func NewStdioFromString(input string) (fio *FakeIO, err error) {
 		err = fmt.Errorf("Cannot create the stdout pipe: %w", err)
 		return
 	}
+
 	fio.stdoutCh = make(chan []byte)
 	fio.stdoutErrCh = make(chan error)
+
 	go reader("stdout", fio.stdoutReader, fio.stdoutCh, fio.stdoutErrCh)
 
 	fio.stderrReader, os.Stderr, err = os.Pipe()
@@ -124,8 +130,10 @@ func NewStdioFromString(input string) (fio *FakeIO, err error) {
 		err = fmt.Errorf("Cannot create the stderr pipe: %w", err)
 		return
 	}
+
 	fio.stderrCh = make(chan []byte)
 	fio.stderrErrCh = make(chan error)
+
 	go reader("stderr", fio.stderrReader, fio.stderrCh, fio.stderrErrCh)
 
 	return
@@ -144,19 +152,24 @@ func (fio *FakeIO) Done() (stdout, stderr []byte, err error) {
 	if fio.finished {
 		err = errors.New("FakeIO.Done - already called")
 	}
+
 	fio.finished = true
 	fio.Unlock()
 
 	fio.stdinWriter.Close()
 
 	os.Stdout.Close()
+
 	stdout = <-fio.stdoutCh
+
 	if tmpErr, ok := <-fio.stdoutErrCh; ok {
 		err = tmpErr
 	}
 
 	os.Stderr.Close()
+
 	stderr = <-fio.stderrCh
+
 	if tmpErr, ok := <-fio.stderrErrCh; ok {
 		err = errors.Join(err, tmpErr)
 	}
