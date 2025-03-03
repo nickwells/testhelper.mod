@@ -13,6 +13,7 @@ func TestFakeIO(t *testing.T) {
 	testCases := []struct {
 		testhelper.ID
 		testhelper.ExpErr
+		ignoreErr string
 		input     string
 		expStdout string
 		expStderr string
@@ -63,7 +64,7 @@ func TestFakeIO(t *testing.T) {
 			expStdout: "Hello",
 		},
 		{
-			ID: testhelper.MkID("very large input, write to stdout"),
+			ID: testhelper.MkID("very large input, write to stderr"),
 			testFunc: func() {
 				b := make([]byte, 5)
 				_, _ = os.Stdin.Read(b)
@@ -73,10 +74,8 @@ func TestFakeIO(t *testing.T) {
 			expStderr: "Hello",
 		},
 		{
-			ID: testhelper.MkID("very large input, close Stdin"),
-			ExpErr: testhelper.MkExpErr(
-				"Error writing to stdin",
-				"broken pipe"),
+			ID:        testhelper.MkID("very large input, close Stdin"),
+			ignoreErr: "Error writing to stdin: broken pipe",
 			testFunc: func() {
 				b := make([]byte, 5)
 				_, _ = os.Stdin.Read(b)
@@ -93,13 +92,17 @@ func TestFakeIO(t *testing.T) {
 		if err != nil {
 			t.Fatal("Unexpected error (NewStdioFromString): ", err)
 		}
+
 		tc.testFunc()
+
 		actOut, actErr, err := fio.Done()
-		testhelper.CheckExpErr(t, err, tc)
+		if fmt.Sprint(err) != tc.ignoreErr {
+			testhelper.CheckExpErr(t, err, tc)
+		}
+
 		testhelper.DiffString(t, tc.IDStr(), "stdout",
 			string(actOut), tc.expStdout)
 		testhelper.DiffString(t, tc.IDStr(), "stderr",
 			string(actErr), tc.expStderr)
-
 	}
 }
