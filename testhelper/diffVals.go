@@ -153,10 +153,11 @@ func DiffVals(actVal, expVal any, ignore ...[]string) error {
 }
 
 // diffVals returns an error if the two values differ, either in type or value
-func diffVals(actVal, expVal reflect.Value, dl deepLoc) error { //nolint:gocyclo
+func diffVals(actVal, expVal reflect.Value, dl deepLoc) error { //nolint:cyclop
 	if dl.skip() {
 		return nil
 	}
+
 	dl.incr()
 
 	if !actVal.IsValid() && !expVal.IsValid() {
