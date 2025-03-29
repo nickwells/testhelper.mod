@@ -108,7 +108,7 @@ func NewStdioFromString(input string) (fio *FakeIO, err error) {
 
 	os.Stdin, fio.stdinWriter, err = os.Pipe()
 	if err != nil {
-		err = fmt.Errorf("Cannot create the stdin pipe: %w", err)
+		err = fmt.Errorf("cannot create the stdin pipe: %w", err)
 		return
 	}
 
@@ -118,7 +118,7 @@ func NewStdioFromString(input string) (fio *FakeIO, err error) {
 
 	fio.stdoutReader, os.Stdout, err = os.Pipe()
 	if err != nil {
-		err = fmt.Errorf("Cannot create the stdout pipe: %w", err)
+		err = fmt.Errorf("cannot create the stdout pipe: %w", err)
 		return
 	}
 
@@ -129,7 +129,7 @@ func NewStdioFromString(input string) (fio *FakeIO, err error) {
 
 	fio.stderrReader, os.Stderr, err = os.Pipe()
 	if err != nil {
-		err = fmt.Errorf("Cannot create the stderr pipe: %w", err)
+		err = fmt.Errorf("cannot create the stderr pipe: %w", err)
 		return
 	}
 

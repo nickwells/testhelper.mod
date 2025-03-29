@@ -228,7 +228,7 @@ func ReportUnexpectedPanic(t *testing.T, testID string,
 func badPanicString(panicked, panicExpected bool,
 	panicVal any, shouldContain []string,
 ) []string {
-	if !(panicked && panicExpected) {
+	if !panicked || !panicExpected {
 		return badPanic(panicked, panicExpected)
 	}
 
@@ -248,7 +248,7 @@ func badPanicString(panicked, panicExpected bool,
 func badPanicError(panicked, panicExpected bool,
 	panicVal any, shouldContain []string,
 ) []string {
-	if !(panicked && panicExpected) {
+	if !panicked || !panicExpected {
 		return badPanic(panicked, panicExpected)
 	}
 

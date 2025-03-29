@@ -17,11 +17,12 @@ import (
 // Only the Permission bits of the perms are used, any other values are
 // masked out before use.
 func MakeTempDir(name string, perms os.FileMode) func() {
-	err := os.Mkdir(name, os.ModePerm)
+	err := os.Mkdir(name, perms&os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
 
+	// Mkdir applies umask so this forces the desired permissions
 	err = os.Chmod(name, perms&os.ModePerm)
 	if err != nil {
 		_ = os.Remove(name)
@@ -74,7 +75,7 @@ func MakeTempDirCopy(fromDir string) (string, func() error, error) {
 // recursively for subdirectories and return the first error encountered.
 // Both "from" and "to" directories should exist before it is called.
 func copyDirFromTo(from, to string) error {
-	d, err := os.Open(from)
+	d, err := os.Open(from) //nolint:gosec
 	if err != nil {
 		return err
 	}
@@ -107,7 +108,7 @@ func copyDirFromTo(from, to string) error {
 				toFile   = filepath.Join(to, fi.Name())
 			)
 
-			fromBytes, err := os.ReadFile(fromFile)
+			fromBytes, err := os.ReadFile(fromFile) //nolint:gosec
 			if err != nil {
 				return err
 			}

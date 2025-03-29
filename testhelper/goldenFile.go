@@ -251,7 +251,7 @@ func getExpVal(t *testing.T, id, gfName string, val []byte, updGF bool,
 		}
 	}
 
-	expVal, err := os.ReadFile(gfName)
+	expVal, err := os.ReadFile(gfName) //nolint:gosec
 	if err != nil {
 		t.Log(id)
 		t.Logf("\t: Problem with the golden file: %q", gfName)
@@ -347,7 +347,7 @@ func actEqualsExp(t *testing.T, id, gfName string, actVal, expVal []byte) bool {
 func updateGoldenFile(t *testing.T, gfName string, val []byte) bool {
 	t.Helper()
 
-	origVal, err := os.ReadFile(gfName)
+	origVal, err := os.ReadFile(gfName) //nolint:gosec
 	if err == nil {
 		if bytes.Equal(val, origVal) {
 			return true

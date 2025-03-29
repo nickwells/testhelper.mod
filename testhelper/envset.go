@@ -42,7 +42,7 @@ func (ec *EnvCache) Setenv(entries ...EnvEntry) error {
 // afterwards exist but with an empty value.
 func (ec *EnvCache) ResetEnv() {
 	for i := len(ec.Stack) - 1; i >= 0; i-- {
-		os.Setenv(ec.Stack[i].Key, ec.Stack[i].Value)
+		_ = os.Setenv(ec.Stack[i].Key, ec.Stack[i].Value)
 	}
 
 	ec.Stack = ec.Stack[:0]

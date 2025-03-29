@@ -66,8 +66,8 @@ func TestBadPanicString(t *testing.T) {
 	for _, tc := range testCases {
 		var panicIsBad bool
 
-		msgs := badPanicString(tc.panicked, tc.ExpPanic.Expected,
-			tc.panicVal, tc.ExpPanic.ShouldContain)
+		msgs := badPanicString(tc.panicked, tc.PanicExpected(),
+			tc.panicVal, tc.PanicShldCont())
 		if len(msgs) > 0 {
 			panicIsBad = true
 		}
@@ -152,8 +152,8 @@ func TestBadPanicError(t *testing.T) {
 	for _, tc := range testCases {
 		var panicIsBad bool
 
-		msgs := badPanicError(tc.panicked, tc.ExpPanic.Expected,
-			tc.panicVal, tc.ExpPanic.ShouldContain)
+		msgs := badPanicError(tc.panicked, tc.PanicExpected(),
+			tc.panicVal, tc.PanicShldCont())
 		if len(msgs) > 0 {
 			panicIsBad = true
 		}

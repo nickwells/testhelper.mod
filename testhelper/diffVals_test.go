@@ -42,6 +42,7 @@ type myStructNestedNamed struct {
 	mss myStructSimple
 }
 
+//nolint:gosec
 func TestDiffVals(t *testing.T) {
 	i := 0
 	j := 0
