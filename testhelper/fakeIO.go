@@ -9,6 +9,8 @@ import (
 	"sync"
 )
 
+// OrigStdout holds the original value of the stdout before it is replaced
+// with the fakeIO file.
 var OrigStdout = os.Stdout
 
 // FakeIO holds the details needed to redirect and restore Stdin, Stdout and

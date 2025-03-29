@@ -210,6 +210,9 @@ func DiffErr(t *testing.T, id, name string, act, exp error) bool {
 	return false
 }
 
+// MaxReportedDiffs is the maximum number of differences that will be
+// shown. If there are more differences then an elipsis (...) is printed and
+// any remaining differences are suppressed.
 const MaxReportedDiffs = 5
 
 // reportDiffCount reports the number of differences found
@@ -288,7 +291,7 @@ func DiffSlice[C comparable](t *testing.T, id, name string, act, exp []C) bool {
 	return diffCount > 0
 }
 
-// DiffFloat64Slice compares the actual against the expected value and reports
+// DiffFloatSlice compares the actual against the expected value and reports
 // an error if they differ. At most MaxReportedDiffs are reported.
 func DiffFloatSlice[F constraints.Float](t *testing.T, id, name string,
 	act, exp []F, epsilon F,
