@@ -3,17 +3,33 @@ package testhelper_test
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/nickwells/testhelper.mod/v2/testhelper"
 )
 
+// skipErrCheck returns false if the regexp is nil or the err is nil or if
+// the error text does not match it. It returns true only if the regexp and
+// the error are non nil and the regexp matches the error text.
+func skipErrCheck(err error, ignoreErr *regexp.Regexp) bool {
+	if err == nil {
+		return false
+	}
+
+	if ignoreErr == nil {
+		return false
+	}
+
+	return ignoreErr.MatchString(err.Error())
+}
+
 func TestFakeIO(t *testing.T) {
 	testCases := []struct {
 		testhelper.ID
 		testhelper.ExpErr
-		ignoreErr string
+		ignoreErr *regexp.Regexp
 		input     string
 		expStdout string
 		expStderr string
@@ -74,8 +90,9 @@ func TestFakeIO(t *testing.T) {
 			expStderr: "Hello",
 		},
 		{
-			ID:        testhelper.MkID("very large input, close Stdin"),
-			ignoreErr: "Error writing to stdin: broken pipe",
+			ID: testhelper.MkID("very large input, close Stdin"),
+			ignoreErr: regexp.MustCompile(
+				"Error writing to stdin:.*broken pipe"),
 			testFunc: func() {
 				b := make([]byte, 5)
 				_, _ = os.Stdin.Read(b)
@@ -96,7 +113,7 @@ func TestFakeIO(t *testing.T) {
 		tc.testFunc()
 
 		actOut, actErr, err := fio.Done()
-		if fmt.Sprint(err) != tc.ignoreErr {
+		if !skipErrCheck(err, tc.ignoreErr) {
 			testhelper.CheckExpErr(t, err, tc)
 		}
 
