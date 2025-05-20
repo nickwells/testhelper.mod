@@ -11,7 +11,7 @@ import (
 )
 
 // almostEqual returns true if a and b are within epsilon of one
-// another. Copied from github.com/nickwells/mathutil.mod/mathutil
+// another. Copied from github.com/nickwells/mathutil.mod/mathutil.
 func almostEqual[T constraints.Float](a, b, epsilon T) bool {
 	if a == b {
 		return true
@@ -20,7 +20,7 @@ func almostEqual[T constraints.Float](a, b, epsilon T) bool {
 	return math.Abs(float64(a-b)) < float64(epsilon)
 }
 
-// reportFloatDiff reports the difference between two float values
+// reportFloatDiff reports the difference between two float values.
 func reportFloatDiff[T constraints.Float](t *testing.T, name string,
 	act, exp T,
 ) {
@@ -33,8 +33,10 @@ func reportFloatDiff[T constraints.Float](t *testing.T, name string,
 	t.Errorf("\t: %s is incorrect\n", name)
 }
 
-// DiffFloat compares the actual against the expected value and reports
-// an error if they differ by more than epsilon
+// DiffFloat compares the actual against the expected value and reports an
+// error if they differ by more than epsilon.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffFloat[T constraints.Float](t *testing.T, id, name string,
 	act, exp, epsilon T,
 ) bool {
@@ -51,7 +53,9 @@ func DiffFloat[T constraints.Float](t *testing.T, id, name string,
 }
 
 // DiffInt compares the actual against the expected value and reports an
-// error if they differ
+// error if they differ.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffInt[T constraints.Integer](t *testing.T, id, name string,
 	act, exp T,
 ) bool {
@@ -91,7 +95,7 @@ func stringFirstDiff[S ~string](act, exp S) int {
 	return len(actRunes)
 }
 
-// reportStringDiff reports the difference between two strings
+// reportStringDiff reports the difference between two strings.
 func reportStringDiff[S ~string](t *testing.T, name string, act, exp S) {
 	t.Helper()
 
@@ -102,7 +106,9 @@ func reportStringDiff[S ~string](t *testing.T, name string, act, exp S) {
 }
 
 // DiffString compares the actual against the expected value and reports an
-// error if they differ
+// error if they differ.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffString[S ~string](t *testing.T, id, name string, act, exp S) bool {
 	t.Helper()
 
@@ -120,6 +126,8 @@ func DiffString[S ~string](t *testing.T, id, name string, act, exp S) bool {
 // error if they differ. It will report them as different if one is nil or
 // has a nil value and the other isn't/doesn't or if they are both non-nil
 // and the string values differ.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffStringer(t *testing.T, id, name string, actS, expS fmt.Stringer) bool {
 	t.Helper()
 
@@ -152,7 +160,9 @@ func DiffStringer(t *testing.T, id, name string, actS, expS fmt.Stringer) bool {
 }
 
 // DiffBool compares the actual against the expected value and reports an
-// error if they differ
+// error if they differ.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffBool(t *testing.T, id, name string, act, exp bool) bool {
 	t.Helper()
 
@@ -169,7 +179,9 @@ func DiffBool(t *testing.T, id, name string, act, exp bool) bool {
 }
 
 // DiffTime compares the actual against the expected value and reports an
-// error if they differ
+// error if they differ.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffTime(t *testing.T, id, name string, act, exp time.Time) bool {
 	t.Helper()
 
@@ -189,6 +201,8 @@ func DiffTime(t *testing.T, id, name string, act, exp time.Time) bool {
 // DiffErr compares the actual against the expected value and reports an
 // error if they differ. Note that it compares the string representation and
 // not the error type so there might be a mismatch.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffErr(t *testing.T, id, name string, act, exp error) bool {
 	t.Helper()
 
@@ -260,6 +274,8 @@ func reportSliceLenDiff(t *testing.T, id, name string, act, exp int) bool {
 
 // DiffSlice compares the actual against the expected value and reports
 // an error if they differ. At most MaxReportedDiffs are reported.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffSlice[C comparable](t *testing.T, id, name string, act, exp []C) bool {
 	t.Helper()
 
@@ -293,6 +309,8 @@ func DiffSlice[C comparable](t *testing.T, id, name string, act, exp []C) bool {
 
 // DiffFloatSlice compares the actual against the expected value and reports
 // an error if they differ. At most MaxReportedDiffs are reported.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffFloatSlice[F constraints.Float](t *testing.T, id, name string,
 	act, exp []F, epsilon F,
 ) bool {
@@ -327,6 +345,8 @@ func DiffFloatSlice[F constraints.Float](t *testing.T, id, name string,
 
 // DiffStringSlice compares the actual against the expected value and reports
 // an error if they differ. At most MaxReportedDiffs are reported.
+//
+// It returns true if the actual and expected values differ, false otherwise.
 func DiffStringSlice[S ~string](t *testing.T, id, name string,
 	act, exp []S,
 ) bool {

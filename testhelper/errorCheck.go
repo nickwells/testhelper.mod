@@ -25,38 +25,40 @@ func MkExpErr(s ...string) ExpErr {
 	}
 }
 
-// ErrExpected returns true or false according to the value of the Expected field
+// ErrExpected returns true or false according to the value of the Expected
+// field.
 func (e ExpErr) ErrExpected() bool {
 	return e.Expected
 }
 
-// ErrShldCont returns the value of the ShouldContain field
+// ErrShldCont returns the value of the ShouldContain field.
 func (e ExpErr) ErrShldCont() []string {
 	return e.ErrShouldContain
 }
 
-// TestErr is an interface wrapping the error expectation methods
+// TestErr is an interface wrapping the error expectation methods.
 type TestErr interface {
 	ErrExpected() bool
 	ErrShldCont() []string
 }
 
-// TestCaseWithErr combines the TestCase and TestErr interfaces
+// TestCaseWithErr combines the TestCase and TestErr interfaces.
 type TestCaseWithErr interface {
 	TestCase
 	TestErr
 }
 
 // CheckExpErr calls CheckError using the details from the test case to supply
-// the parameters
+// the parameters.
 func CheckExpErr(t *testing.T, err error, tce TestCaseWithErr) bool {
 	t.Helper()
 	return CheckError(t, tce.IDStr(), err, tce.ErrExpected(), tce.ErrShldCont())
 }
 
 // CheckExpErrWithID calls CheckError using the details from the TestErr to
-// supply the parameters. The testID is supplied separately
-func CheckExpErrWithID(t *testing.T, testID string, err error, te TestErr) bool {
+// supply the parameters. The testID is supplied separately.
+func CheckExpErrWithID(t *testing.T, testID string, err error, te TestErr,
+) bool {
 	t.Helper()
 	return CheckError(t, testID, err, te.ErrExpected(), te.ErrShldCont())
 }
@@ -64,15 +66,19 @@ func CheckExpErrWithID(t *testing.T, testID string, err error, te TestErr) bool 
 // CheckError checks that the error is nil if it is not expected, that it is
 // non-nil if it is expected and that it contains the expected content if it
 // is expected and non-nil. It will return false if there is any problem with
-// the error, true otherwise
-func CheckError(t *testing.T, testID string, err error, expected bool, shouldContain []string) bool {
+// the error, true otherwise.
+func CheckError(t *testing.T,
+	testID string,
+	err error,
+	expected bool, shouldContain []string,
+) bool {
 	t.Helper()
 
 	if err != nil {
 		if !expected {
 			t.Log(testID)
 			t.Log("\t: unexpected error:")
-			t.Logf("\t\t%s", err)
+			t.Logf("\t\t%q", err)
 			t.Errorf("\t: no error was expected")
 
 			return false
