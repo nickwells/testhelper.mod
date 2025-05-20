@@ -198,6 +198,36 @@ func DiffTime(t *testing.T, id, name string, act, exp time.Time) bool {
 	return false
 }
 
+// DiffTimeApprox compares the actual against the expected value and reports
+// an error if they differ by more that the epsilon Duration. Note that the
+// epsilon value should be a positive duration, greater than zero.
+//
+// It returns true if the actual and expected values differ, false otherwise.
+func DiffTimeApprox(t *testing.T,
+	id, name string,
+	act, exp time.Time, epsilon time.Duration,
+) bool {
+	t.Helper()
+
+	d := act.Sub(exp)
+
+	if d < 0 {
+		d *= -1
+	}
+
+	if d > epsilon {
+		t.Log(id)
+		t.Logf("\t: expected %s: %v\n", name, exp)
+		t.Logf("\t:   actual %s: %v\n", name, act)
+		t.Logf("\t: difference: %v is greater than epsilon(%v)\n", d, epsilon)
+		t.Errorf("\t: %s is incorrect\n", name)
+
+		return true
+	}
+
+	return false
+}
+
 // DiffErr compares the actual against the expected value and reports an
 // error if they differ. Note that it compares the string representation and
 // not the error type so there might be a mismatch.
