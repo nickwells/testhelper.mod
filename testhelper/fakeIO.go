@@ -67,6 +67,7 @@ func reader(name string, r *os.File, byteCh chan []byte, errCh chan error) {
 	if _, err := io.Copy(&b, r); err != nil {
 		errCh <- fmt.Errorf("Error copying from %s: %w", name, err)
 	}
+
 	byteCh <- b.Bytes()
 
 	r.Close()
@@ -151,6 +152,7 @@ func (fio *FakeIO) Done() (stdout, stderr []byte, err error) {
 	}
 
 	fio.Lock()
+
 	if fio.finished {
 		err = errors.New("FakeIO.Done - already called")
 	}

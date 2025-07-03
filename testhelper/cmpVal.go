@@ -12,12 +12,13 @@ import (
 
 // almostEqual returns true if a and b are within epsilon of one
 // another. Copied from github.com/nickwells/mathutil.mod/mathutil.
+// Note that the epsilon value is forced to a positive value.
 func almostEqual[T constraints.Float](a, b, epsilon T) bool {
 	if a == b {
 		return true
 	}
 
-	return math.Abs(float64(a-b)) < float64(epsilon)
+	return math.Abs(float64(a-b)) < math.Abs(float64(epsilon))
 }
 
 // reportFloatDiff reports the difference between two float values.
@@ -28,6 +29,7 @@ func reportFloatDiff[T constraints.Float](t *testing.T, name string,
 
 	t.Logf("\t: expected %s: %5g\n", name, exp)
 	t.Logf("\t:   actual %s: %5g\n", name, act)
+
 	charCnt := len(name) + len("expected") + 1
 	t.Logf("\t: %*s: %5g\n", charCnt, "diff", math.Abs(float64(act-exp)))
 	t.Errorf("\t: %s is incorrect\n", name)

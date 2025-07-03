@@ -53,10 +53,10 @@ func TestDiffVals(t *testing.T) {
 
 	var nilMap map[string]any
 
-	var loopyArray1 [3]any
+	loopyArray1 := [3]any{}
 	loopyArray1[0] = &loopyArray1
 
-	var loopyArray2 [3]any
+	loopyArray2 := [3]any{}
 	loopyArray2[0] = &loopyArray2
 
 	loopySlice1 := make([]any, 0)

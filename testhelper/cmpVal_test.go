@@ -48,3 +48,54 @@ func TestStringFirstDiff(t *testing.T) {
 		DiffInt(t, tc.IDStr(), "firstDiff", fd, tc.expFirstDiff)
 	}
 }
+
+func TestAlmostEqual(t *testing.T) {
+	testCases := []struct {
+		ID
+		a, b, epsilon float64
+		expected      bool
+	}{
+		{
+			ID:       MkID("a == b, epsilon: 0"),
+			a:        1.234,
+			b:        1.234,
+			epsilon:  0,
+			expected: true,
+		},
+		{
+			ID:       MkID("a == b, epsilon: 1"),
+			a:        1.234,
+			b:        1.234,
+			epsilon:  1,
+			expected: true,
+		},
+		{
+			ID:       MkID("a != b, epsilon: 0"),
+			a:        1.234,
+			b:        2.345,
+			epsilon:  0,
+			expected: false,
+		},
+		{
+			ID:       MkID("a != b, epsilon < diff"),
+			a:        1.234,
+			b:        1.235,
+			epsilon:  0.0001,
+			expected: false,
+		},
+		{
+			ID:       MkID("a != b, epsilon > diff"),
+			a:        1.234,
+			b:        1.235,
+			epsilon:  0.01,
+			expected: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			result := almostEqual(tc.a, tc.b, tc.epsilon)
+			DiffBool(t, tc.IDStr(), "almostEqual", result, tc.expected)
+		})
+	}
+}
