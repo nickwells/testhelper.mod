@@ -124,8 +124,7 @@ func CheckExpPanicErrorWithStack(t *testing.T,
 }
 
 // PanicCheckString tests the panic value (which should be a string) against
-// the passed values. It will report an error if the panic status is
-// unexpected.
+// the passed values. It will return true if the panic status is unexpected.
 func PanicCheckString(t *testing.T, testID string,
 	panicked, panicExpected bool,
 	panicVal any, shouldContain []string,
@@ -165,7 +164,7 @@ func PanicCheckStringWithStack(t *testing.T, testID string,
 }
 
 // PanicCheckError tests the panic value (which should be an error) against
-// the passed values. It will report an error if the panic status is
+// the passed values. It will return true if the panic status is
 // unexpected.
 func PanicCheckError(t *testing.T, testID string,
 	panicked, panicExpected bool,
