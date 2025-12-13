@@ -273,8 +273,9 @@ func DiffErr(t *testing.T, id, name string, act, exp error) bool {
 }
 
 // MaxReportedDiffs is the maximum number of differences that will be
-// shown. If there are more differences then an elipsis (...) is printed and
-// any remaining differences are suppressed.
+// shown when comparing slices using DiffSlice, DiffFloatSlice or
+// DiffStringSlice. If there are more differences then an elipsis (...)
+// is printed and any remaining differences are suppressed.
 const MaxReportedDiffs = 5
 
 // reportDiffCount reports the number of differences found
