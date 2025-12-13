@@ -206,7 +206,8 @@ func DiffTime(t *testing.T, id, name string, act, exp time.Time) bool {
 		t.Log(id)
 		t.Logf("\t: expected %s: %v\n", name, exp)
 		t.Logf("\t:   actual %s: %v\n", name, act)
-		t.Logf("\t: difference: %v\n", d)
+		charCnt := len(name) + len("expected") + 1
+		t.Logf("\t: %*s: %v\n", charCnt, "diff", d)
 		t.Errorf("\t: %s is incorrect\n", name)
 
 		return true
