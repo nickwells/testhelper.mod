@@ -54,6 +54,15 @@ func DiffFloat[T constraints.Float](t *testing.T, id, name string,
 	return false
 }
 
+// intTypeHasStringer checks to see if the Integer type of 'v' has a Stringer
+// method and returns true if so.
+func intTypeHasStringer[T constraints.Integer](v T) bool {
+	s := fmt.Sprint(v)
+	i := fmt.Sprintf("%d", v)
+
+	return s != i
+}
+
 // DiffInt compares the actual against the expected value and reports an
 // error if they differ.
 //
@@ -64,9 +73,15 @@ func DiffInt[T constraints.Integer](t *testing.T, id, name string,
 	t.Helper()
 
 	if act != exp {
+		var sAct, sExp string
+		if intTypeHasStringer(act) {
+			sAct = fmt.Sprintf(" (%q)", act)
+			sExp = fmt.Sprintf(" (%q)", exp)
+		}
+
 		t.Log(id)
-		t.Logf("\t: expected %s: %5d\n", name, exp)
-		t.Logf("\t:   actual %s: %5d\n", name, act)
+		t.Logf("\t: expected %s: %5d%s\n", name, exp, sExp)
+		t.Logf("\t:   actual %s: %5d%s\n", name, act, sAct)
 		charCnt := len(name) + len("expected") + 1
 		t.Logf("\t: %*s: %5d\n", charCnt, "diff",
 			int64(math.Abs(float64(act-exp))))
