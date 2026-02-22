@@ -93,7 +93,7 @@ func copyDirFromTo(from, to string) error {
 				newToDir   = filepath.Join(to, fi.Name())
 			)
 
-			err = os.Mkdir(newToDir, fi.Mode()&fs.ModePerm)
+			err = os.Mkdir(newToDir, fi.Mode()&fs.ModePerm) //nolint:gosec
 			if err != nil {
 				return err
 			}
@@ -113,7 +113,9 @@ func copyDirFromTo(from, to string) error {
 				return err
 			}
 
-			err = os.WriteFile(toFile, fromBytes, fi.Mode()&fs.ModePerm)
+			err = os.WriteFile(toFile, //nolint:gosec
+				fromBytes,
+				fi.Mode()&fs.ModePerm)
 			if err != nil {
 				return err
 			}
