@@ -99,7 +99,7 @@ func TestDiffVals(t *testing.T) {
 		{
 			ID:     testhelper.MkID("exp nil, act not"),
 			actVal: 42,
-			ExpErr: testhelper.MkExpErr("the expected value is nil," +
+			ExpErr: testhelper.MkExpErr("int: the expected value is nil," +
 				" the actual value is not"),
 		},
 		{
@@ -112,14 +112,14 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("types differ, array by length"),
 			actVal: [...]int{1, 2, 3},
 			expVal: [...]int{1, 2, 3, 4},
-			ExpErr: testhelper.MkExpErr(`this: types differ.`,
+			ExpErr: testhelper.MkExpErr(`[3]int: types differ.`,
 				"Actual: [3]int, expected: [4]int"),
 		},
 		{
 			ID:     testhelper.MkID("types differ"),
 			actVal: 3.14159,
 			expVal: 42,
-			ExpErr: testhelper.MkExpErr(`this: types differ.`,
+			ExpErr: testhelper.MkExpErr(`float64: types differ.`,
 				"Actual: float64, expected: int"),
 		},
 		{
@@ -131,7 +131,7 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("vals differ, bool"),
 			actVal: true,
 			expVal: false,
-			ExpErr: testhelper.MkExpErr(`this: bool values differ.`,
+			ExpErr: testhelper.MkExpErr(`bool: bool values differ.`,
 				"Actual: true, expected: false"),
 		},
 		{
@@ -143,7 +143,7 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("vals differ, int"),
 			actVal: 42,
 			expVal: 43,
-			ExpErr: testhelper.MkExpErr(`this: int values differ.`,
+			ExpErr: testhelper.MkExpErr(`int: int values differ.`,
 				"Actual: 42, expected: 43"),
 		},
 		{
@@ -155,7 +155,7 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("vals differ, uint"),
 			actVal: uint(42),
 			expVal: uint(43),
-			ExpErr: testhelper.MkExpErr(`this: uint values differ.`,
+			ExpErr: testhelper.MkExpErr(`uint: uint values differ.`,
 				"Actual: 42, expected: 43"),
 		},
 		{
@@ -167,7 +167,7 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("vals differ, float"),
 			actVal: 3.14159,
 			expVal: 4.14159,
-			ExpErr: testhelper.MkExpErr(`this: float values differ.`,
+			ExpErr: testhelper.MkExpErr(`float64: float values differ.`,
 				"Actual: 3.14159, expected: 4.14159"),
 		},
 		{
@@ -179,7 +179,7 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("vals differ, complex"),
 			actVal: complex(1, 2),
 			expVal: complex(3, 4),
-			ExpErr: testhelper.MkExpErr(`this: complex values differ.`,
+			ExpErr: testhelper.MkExpErr(`complex128: complex values differ.`,
 				"Actual: (1+2i), expected: (3+4i)"),
 		},
 		{
@@ -201,28 +201,31 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("value diff by len, map"),
 			actVal: map[string]any{"a": "A", "b": 42},
 			expVal: map[string]any{"a": "A"},
-			ExpErr: testhelper.MkExpErr(`this: map lengths differ.`,
+			ExpErr: testhelper.MkExpErr(
+				`map[string]interface {}: map lengths differ.`,
 				`Actual: 2, expected: 1`),
 		},
 		{
 			ID:     testhelper.MkID("value diff by keys, map"),
 			actVal: map[string]any{"a": "A", "b": 42},
 			expVal: map[string]any{"a": "A", "c": 42},
-			ExpErr: testhelper.MkExpErr(`this[b]:` +
+			ExpErr: testhelper.MkExpErr(`map[string]interface {}[b]:` +
 				` the expected value is invalid, the actual value is not`),
 		},
 		{
 			ID:     testhelper.MkID("value diff by value, map"),
 			actVal: map[string]any{"a": "A", "b": 42},
 			expVal: map[string]any{"a": "Not-A", "b": 42},
-			ExpErr: testhelper.MkExpErr(`this[a]: strings differ.`,
+			ExpErr: testhelper.MkExpErr(
+				`map[string]interface {}[a]: strings differ.`,
 				`Actual: "A", expected: "Not-A"`),
 		},
 		{
 			ID:     testhelper.MkID("value diff by type, map"),
 			actVal: map[string]any{"a": "A", "b": 42},
 			expVal: map[string]any{"a": 3.14159, "b": 42},
-			ExpErr: testhelper.MkExpErr(`this[a]: types differ.`,
+			ExpErr: testhelper.MkExpErr(
+				`map[string]interface {}[a]: types differ.`,
 				"Actual: string, expected: float64"),
 		},
 		{
@@ -239,14 +242,16 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("value diff by value, array"),
 			actVal: [...]any{42, 3.14159, "Hello", "World", myFunc},
 			expVal: [...]any{1, 3.14159, "Hello", "World", myFunc},
-			ExpErr: testhelper.MkExpErr(`this[0]: int values differ.`,
+			ExpErr: testhelper.MkExpErr(
+				`[5]interface {}[0]: int values differ.`,
 				"Actual: 42, expected: 1"),
 		},
 		{
 			ID:     testhelper.MkID("value diff by type, array"),
 			actVal: [...]any{42, 3.14159, "Hello", "World", myFunc},
 			expVal: [...]any{1.2, 3.14159, "Hello", "World", myFunc},
-			ExpErr: testhelper.MkExpErr(`this[0]: types differ.`,
+			ExpErr: testhelper.MkExpErr(
+				`[5]interface {}[0]: types differ.`,
 				"Actual: int, expected: float64"),
 		},
 		{
@@ -268,21 +273,23 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("value diff by length, slice"),
 			actVal: []any{42, 3.14159, "Hello", "World", myFunc},
 			expVal: []any{42, 3.14159, "Hello", "World"},
-			ExpErr: testhelper.MkExpErr(`this: slice lengths differ.`,
+			ExpErr: testhelper.MkExpErr(
+				`[]interface {}: slice lengths differ.`,
 				"Actual: 5, expected: 4"),
 		},
 		{
 			ID:     testhelper.MkID("value diff by value, slice"),
 			actVal: []any{42, 3.14159, "Hello", "World", myFunc},
 			expVal: []any{1, 3.14159, "Hello", "World", myFunc},
-			ExpErr: testhelper.MkExpErr(`this[0]: int values differ.`,
+			ExpErr: testhelper.MkExpErr(
+				`[]interface {}[0]: int values differ.`,
 				"Actual: 42, expected: 1"),
 		},
 		{
 			ID:     testhelper.MkID("value diff by type, slice"),
 			actVal: []any{42, 3.14159, "Hello", "World", myFunc},
 			expVal: []any{1.2, 3.14159, "Hello", "World", myFunc},
-			ExpErr: testhelper.MkExpErr(`this[0]: types differ.`,
+			ExpErr: testhelper.MkExpErr(`[]interface {}[0]: types differ.`,
 				"Actual: int, expected: float64"),
 		},
 		{
@@ -294,7 +301,7 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("vals differ, func"),
 			actVal: myFunc,
 			expVal: otherFunc,
-			ExpErr: testhelper.MkExpErr(`this: funcs differ.`,
+			ExpErr: testhelper.MkExpErr(`func() int: funcs differ.`,
 				"Actual instance is not equal to expected"),
 		},
 		{
@@ -306,7 +313,7 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("vals differ, string"),
 			actVal: "Hello",
 			expVal: "Goodbye",
-			ExpErr: testhelper.MkExpErr(`this: strings differ.`,
+			ExpErr: testhelper.MkExpErr(`string: strings differ.`,
 				`Actual: "Hello", expected: "Goodbye"`),
 		},
 		{
@@ -318,7 +325,7 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("diff pointer, unsafePointer"),
 			actVal: unsafe.Pointer(&i),
 			expVal: unsafe.Pointer(&j),
-			ExpErr: testhelper.MkExpErr(`this: pointers differ`),
+			ExpErr: testhelper.MkExpErr(`unsafe.Pointer: pointers differ`),
 		},
 		{
 			ID:     testhelper.MkID("same pointer, uintptr"),
@@ -329,7 +336,8 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("diff pointer, uintptr"),
 			actVal: uintptr(unsafe.Pointer(&i)),
 			expVal: uintptr(unsafe.Pointer(&j)),
-			ExpErr: testhelper.MkExpErr(`this: uintptr pointers differ`),
+			ExpErr: testhelper.MkExpErr(
+				`uintptr: uintptr pointers differ`),
 		},
 		{
 			ID:     testhelper.MkID("same pointer, ptr"),
@@ -345,7 +353,7 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("diff pointer, diff value, ptr"),
 			actVal: &i,
 			expVal: &k,
-			ExpErr: testhelper.MkExpErr(`this: int values differ.`,
+			ExpErr: testhelper.MkExpErr(`*int: int values differ.`,
 				"Actual: 0, expected: 1"),
 		},
 		{
@@ -362,7 +370,8 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("vals differ, simple struct"),
 			actVal: mssi42,
 			expVal: mssi99,
-			ExpErr: testhelper.MkExpErr(`this.i: int values differ.`,
+			ExpErr: testhelper.MkExpErr(
+				`testhelper_test.myStructSimple.i: int values differ.`,
 				"Actual: 42, expected: 99"),
 		},
 		{
@@ -375,7 +384,8 @@ func TestDiffVals(t *testing.T) {
 			actVal: msnui42,
 			expVal: msnui99,
 			ExpErr: testhelper.MkExpErr(
-				`this.myStructSimple.i: int values differ.`,
+				"testhelper_test.myStructNestedUnnamed.myStructSimple.i:"+
+					" int values differ.",
 				"Actual: 42, expected: 99"),
 		},
 		{
@@ -393,7 +403,9 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("vals differ, nested, named"),
 			actVal: msnni42,
 			expVal: msnni99,
-			ExpErr: testhelper.MkExpErr(`this.mss.i: int values differ.`,
+			ExpErr: testhelper.MkExpErr(
+				"testhelper_test.myStructNestedNamed.mss.i:"+
+					" int values differ.",
 				"Actual: 42, expected: 99"),
 		},
 		{
@@ -401,7 +413,7 @@ func TestDiffVals(t *testing.T) {
 			actVal: msnni42,
 			expVal: msnni99,
 			ExpErr: testhelper.MkExpErr(
-				`this.mss.i: int values differ.`,
+				`testhelper_test.myStructNestedNamed.mss.i: int values differ.`,
 				"Actual: 42, expected: 99"),
 		},
 		{
@@ -410,7 +422,7 @@ func TestDiffVals(t *testing.T) {
 			expVal: msnni99,
 			ignore: [][]string{{"mss", "f"}},
 			ExpErr: testhelper.MkExpErr(
-				`this.mss.i: int values differ.`,
+				`testhelper_test.myStructNestedNamed.mss.i: int values differ.`,
 				"Actual: 42, expected: 99"),
 		},
 		{
@@ -428,21 +440,21 @@ func TestDiffVals(t *testing.T) {
 			ID:     testhelper.MkID("chan, vals differ"),
 			actVal: chan1,
 			expVal: chan2,
-			ExpErr: testhelper.MkExpErr(`this: chans differ.`,
+			ExpErr: testhelper.MkExpErr(`chan bool: chans differ.`,
 				`Actual instance is not equal to expected`),
 		},
 		{
 			ID:     testhelper.MkID("chan, vals differ, act nil"),
 			actVal: nilChan,
 			expVal: chan2,
-			ExpErr: testhelper.MkExpErr(`this: chans differ.`,
+			ExpErr: testhelper.MkExpErr(`chan bool: chans differ.`,
 				`Actual instance is not equal to expected`),
 		},
 		{
 			ID:     testhelper.MkID("chan, vals differ, exp nil"),
 			actVal: chan1,
 			expVal: nilChan,
-			ExpErr: testhelper.MkExpErr(`this: chans differ.`,
+			ExpErr: testhelper.MkExpErr(`chan bool: chans differ.`,
 				`Actual instance is not equal to expected`),
 		},
 	}

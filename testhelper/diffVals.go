@@ -3,6 +3,7 @@ package testhelper
 import (
 	"fmt"
 	"reflect"
+	"testing"
 )
 
 // DiffValErr holds an error reflecting the difference between two interface
@@ -39,9 +40,9 @@ type deepLoc struct {
 }
 
 // makeDeepLoc returns a correctly formed deepLoc
-func makeDeepLoc(sl [][]string) deepLoc {
+func makeDeepLoc(name string, sl [][]string) deepLoc {
 	return deepLoc{
-		fullName: "this",
+		fullName: name,
 		skipLocs: sl,
 		loop:     map[visit]bool{},
 	}
@@ -129,6 +130,30 @@ func (dl deepLoc) skip() bool {
 	return false
 }
 
+// DiffValsReport compares the actual against the expected value and reports
+// an error if they differ.
+//
+// It returns true if the actual and expected values differ, false otherwise.
+//
+// See also [DiffVals]
+func DiffValsReport(t *testing.T,
+	id, name string,
+	act, exp any, ignore ...[]string,
+) bool {
+	t.Helper()
+
+	err := DiffVals(act, exp, ignore...)
+	if err != nil {
+		t.Log(id)
+		t.Log("\t: actual and expected values differ:", err)
+		t.Errorf("\t: %s is incorrect\n", name)
+
+		return true
+	}
+
+	return false
+}
+
 // DiffVals compares the actual and expected values and returns an error if
 // they are different. This differs from the reflect package function
 // DeepEqual in that the error shows which fields are different.
@@ -137,12 +162,14 @@ func (dl deepLoc) skip() bool {
 // represents a chain of names in nested structs. So, for instance an ignore
 // value containing the pair of values ["a", "b"] means to not compare the
 // field called "b" in the sub-struct called "a".
+//
+// See also [DiffValsReport]
 func DiffVals(actVal, expVal any, ignore ...[]string) error {
 	if actVal == nil && expVal == nil {
 		return nil
 	}
 
-	dl := makeDeepLoc(ignore)
+	dl := makeDeepLoc(fmt.Sprintf("%T", actVal), ignore)
 	if actVal == nil {
 		return DiffValErr{
 			dl:  dl,
