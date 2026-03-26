@@ -75,8 +75,8 @@ func DiffInt[T constraints.Integer](t *testing.T, id, name string,
 	if act != exp {
 		var sAct, sExp string
 		if intTypeHasStringer(act) {
-			sAct = fmt.Sprintf(" (%q)", act)
-			sExp = fmt.Sprintf(" (%q)", exp)
+			sAct = ` ("` + fmt.Sprint(act) + `")`
+			sExp = ` ("` + fmt.Sprint(exp) + `")`
 		}
 
 		t.Log(id)
