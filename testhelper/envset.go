@@ -1,5 +1,7 @@
 package testhelper
 
+import "slices"
+
 import "os"
 
 // EnvEntry records the name and value of an environment variable
@@ -41,8 +43,8 @@ func (ec *EnvCache) Setenv(entries ...EnvEntry) error {
 // exactly as it was; variables which didn't previously exist at all will
 // afterwards exist but with an empty value.
 func (ec *EnvCache) ResetEnv() {
-	for i := len(ec.Stack) - 1; i >= 0; i-- {
-		_ = os.Setenv(ec.Stack[i].Key, ec.Stack[i].Value)
+	for _, v := range slices.Backward(ec.Stack) {
+		_ = os.Setenv(v.Key, v.Value)
 	}
 
 	ec.Stack = ec.Stack[:0]
