@@ -261,7 +261,7 @@ func diffVals(actVal, expVal reflect.Value, dl deepLoc) error { //nolint:cyclop
 		return diffValsPointer(actVal, expVal, dl)
 	case reflect.Uintptr:
 		return diffValsUintptr(actVal, expVal, dl)
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if valsMustBeEqual(actVal.Pointer(), expVal.Pointer(), actType, dl) {
 			return nil
 		}
