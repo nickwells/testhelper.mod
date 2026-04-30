@@ -1,8 +1,10 @@
 package testhelper
 
-import "slices"
-
-import "os"
+import (
+	"os"
+	"slices"
+	"strings"
+)
 
 // EnvEntry records the name and value of an environment variable
 type EnvEntry struct {
@@ -10,18 +12,24 @@ type EnvEntry struct {
 	Value string
 }
 
-// EnvCache maintains a stack of EnvEntry's. It records the previous value of
-// each environment variable which has been set by the Setenv method. This
-// allows the values to be reset to their original values by the ResetEnv
-// method.
+// EnvCache maintains a stack of [EnvEntry]'s. It records the original value
+// of each environment variable before setting the new value using the
+// [EnvCache.Setenv] method. This allows the values to be restored to their
+// original values by the [EnvCache.ResetEnv] method.
 type EnvCache struct {
 	Stack []EnvEntry
 }
 
+// addEnvEntry adds a new entry to the [EnvCache] Stack. These entries will be
+// set in the environment by the [EnvCache.ResetEnv] method.
+func (ec *EnvCache) addEnvEntry(key, val string) {
+	ec.Stack = append(ec.Stack, EnvEntry{Key: key, Value: val})
+}
+
 // Setenv sets the environment values given by the EnvEntry parameters. It
-// records the prior value so that it can be reset later using the ResetEnv
-// method. The first failure to set a value returns the error and subsequent
-// values are not set.
+// records the prior value so that it can be restored later using the
+// [EnvCache.ResetEnv] method. The first failure to set a value returns the
+// error and subsequent values are not set.
 func (ec *EnvCache) Setenv(entries ...EnvEntry) error {
 	for _, ee := range entries {
 		val := os.Getenv(ee.Key)
@@ -31,10 +39,23 @@ func (ec *EnvCache) Setenv(entries ...EnvEntry) error {
 			return err
 		}
 
-		ec.Stack = append(ec.Stack, EnvEntry{Key: ee.Key, Value: val})
+		ec.addEnvEntry(ee.Key, val)
 	}
 
 	return nil
+}
+
+// Clearenv removes all the environment entries and caches them ready to be
+// restored by [EnvCache.ResetEnv]. It behaves like [os.Clearenv] but caches
+// the original values so they can be restored.
+func (ec *EnvCache) Clearenv() {
+	env := os.Environ()
+	for _, ekv := range env {
+		key, val, _ := strings.Cut(ekv, "=")
+		ec.addEnvEntry(key, val)
+	}
+
+	os.Clearenv()
 }
 
 // ResetEnv resets the environment to its state prior to the modifications
