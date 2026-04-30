@@ -17,7 +17,8 @@ type EnvEntry struct {
 // [EnvCache.Setenv] method. This allows the values to be restored to their
 // original values by the [EnvCache.ResetEnv] method.
 type EnvCache struct {
-	Stack []EnvEntry
+	Stack     []EnvEntry
+	unsetKeys []string
 }
 
 // addEnvEntry adds a new entry to the [EnvCache] Stack. These entries will be
@@ -32,14 +33,18 @@ func (ec *EnvCache) addEnvEntry(key, val string) {
 // error and subsequent values are not set.
 func (ec *EnvCache) Setenv(entries ...EnvEntry) error {
 	for _, ee := range entries {
-		val := os.Getenv(ee.Key)
+		envVal, exists := os.LookupEnv(ee.Key)
 
 		err := os.Setenv(ee.Key, ee.Value)
 		if err != nil {
 			return err
 		}
 
-		ec.addEnvEntry(ee.Key, val)
+		if exists {
+			ec.addEnvEntry(ee.Key, envVal)
+		} else {
+			ec.unsetKeys = append(ec.unsetKeys, ee.Key)
+		}
 	}
 
 	return nil
@@ -59,14 +64,18 @@ func (ec *EnvCache) Clearenv() {
 }
 
 // ResetEnv resets the environment to its state prior to the modifications
-// made through the use of the Setenv method. It clears the stack after the
-// environment has been restored. Note that the environment is not restored
-// exactly as it was; variables which didn't previously exist at all will
-// afterwards exist but with an empty value.
+// made through the use of the [EnvCache.Setenv] method. It clears the stack
+// after the environment has been restored.
 func (ec *EnvCache) ResetEnv() {
 	for _, v := range slices.Backward(ec.Stack) {
 		_ = os.Setenv(v.Key, v.Value)
 	}
 
 	ec.Stack = ec.Stack[:0]
+
+	for _, envKey := range ec.unsetKeys {
+		_ = os.Unsetenv(envKey)
+	}
+
+	ec.unsetKeys = ec.unsetKeys[:0]
 }

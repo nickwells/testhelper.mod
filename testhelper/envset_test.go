@@ -109,9 +109,6 @@ func TestEnvCache(t *testing.T) {
 			expEnv: []testhelper.EnvEntry{
 				{Key: "TestKey_Z", Value: "TestVal_Z"},
 			},
-			postResetEnv: []testhelper.EnvEntry{
-				{Key: "TestKey_Z"},
-			},
 		},
 	}
 
