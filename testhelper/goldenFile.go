@@ -394,9 +394,19 @@ func writeFile(t *testing.T, fName, desc string, val []byte) (rval bool) {
 		}
 	}()
 
+	fName = filepath.Clean(fName)
+
+	if !filepath.IsLocal(fName) {
+		err = fmt.Errorf(
+			"the filename: %q is not local to the test directory",
+			fName)
+
+		return
+	}
+
 	t.Logf("Updating/Creating the %s file: %q", desc, fName)
 
-	err = os.WriteFile(fName, val, pBits)
+	err = os.WriteFile(fName, val, pBits) //nolint:gosec // G703
 	if os.IsNotExist(err) {
 		dir := path.Dir(fName)
 		if dir == "." {
@@ -408,7 +418,7 @@ func writeFile(t *testing.T, fName, desc string, val []byte) (rval bool) {
 			return
 		}
 
-		err = os.WriteFile(fName, val, pBits)
+		err = os.WriteFile(fName, val, pBits) //nolint:gosec // G703
 	}
 
 	return
