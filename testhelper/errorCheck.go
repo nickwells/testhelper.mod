@@ -49,14 +49,15 @@ type TestCaseWithErr interface {
 }
 
 // CheckExpErr calls CheckError using the details from the test case to supply
-// the parameters.
+// the parameters. It will return false if the error is not as expected.
 func CheckExpErr(t *testing.T, err error, tce TestCaseWithErr) bool {
 	t.Helper()
 	return CheckError(t, tce.IDStr(), err, tce.ErrExpected(), tce.ErrShldCont())
 }
 
 // CheckExpErrWithID calls CheckError using the details from the TestErr to
-// supply the parameters. The testID is supplied separately.
+// supply the parameters. The testID is supplied separately. It will return
+// false if the error is not as expected.
 func CheckExpErrWithID(t *testing.T, testID string, err error, te TestErr,
 ) bool {
 	t.Helper()
