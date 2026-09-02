@@ -144,6 +144,11 @@ func DiffString[S ~string](t *testing.T, id, name string, act, exp S) bool {
 // has a nil value and the other isn't/doesn't or if they are both non-nil
 // and the string values differ.
 //
+// Note that this cannot be used for fmt.Stringer types which have an
+// underlying int or float type as these will cause a panic when the IsNil
+// checks are performed. This is a consequence of the reflect library
+// behaviour.
+//
 // It returns true if the actual and expected values differ, false otherwise.
 func DiffStringer(t *testing.T, id, name string, actS, expS fmt.Stringer) bool {
 	t.Helper()
