@@ -254,8 +254,10 @@ func getExpVal(t *testing.T, id, gfName string, val []byte, updGF bool,
 	expVal, err := os.ReadFile(gfName) //nolint:gosec
 	if err != nil {
 		t.Log(id)
-		t.Logf("\t: Problem with the golden file: %q", gfName)
-		t.Errorf("\t: Couldn't read the expected value. Error: %s", err)
+		t.Log("\t: Problem with the golden file")
+		t.Logf("\t:\t%q", gfName)
+		t.Log("\t: Couldn't read the expected value")
+		t.Errorf("\t: Error: %s", err)
 
 		return nil, false
 	}
@@ -292,8 +294,8 @@ func (gfc GoldenFileCfg) checkFile(t *testing.T, id, gfName string, val []byte,
 	expVal, ok := getExpVal(t, id, gfName, val, gfc.updFlag)
 	if !ok {
 		if gfc.UpdFlagName != "" {
-			t.Errorf("\t: To update the golden file with the new value"+
-				" pass %q to the go test command", "-"+gfc.UpdFlagName)
+			t.Log("\t: To update the golden file")
+			t.Errorf("\t: pass %q to 'go test'", "-"+gfc.UpdFlagName)
 		}
 
 		t.Error("\t: Actual\n" + string(val))
@@ -306,16 +308,15 @@ func (gfc GoldenFileCfg) checkFile(t *testing.T, id, gfName string, val []byte,
 	}
 
 	if gfc.UpdFlagName != "" {
-		t.Errorf("\t: To update the golden file with the new value"+
-			" pass %q to the go test command", "-"+gfc.UpdFlagName)
+		t.Log("\t: To update the golden file")
+		t.Errorf("\t: pass %q to 'go test'", "-"+gfc.UpdFlagName)
 	}
 
 	if gfc.keepBadResultsFlag {
 		keepBadResults(t, gfName, val)
 	} else if gfc.KeepBadResultsFlagName != "" {
-		t.Errorf("\t: To keep the (bad) Actual results for later"+
-			" investigation pass %q to the go test command",
-			"-"+gfc.KeepBadResultsFlagName)
+		t.Log("\t: To keep the (bad) Actual results for later investigation")
+		t.Errorf("\t: pass %q to 'go test'", "-"+gfc.KeepBadResultsFlagName)
 	}
 
 	return false
